@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
 import Dashboard from './components/dashboard'
-import NavBar from './components/navbar'
-import Footer from './components/footer'
+import NavBar from './components/NavBar'
+import Footer from './components/Footer'
 import SignUp from './components/SignUp'
 import Login from './components/Login'
+import CreateQuiz from './components/createQuiz'
+import TakeQuiz from './components/takeQuiz'
 import './App.css'
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/logout" element={<h2>Logout</h2>} />
+          <Route path="/createQuiz" element={<CreateQuiz />} />
+          <Route path="/takeQuiz" element={<TakeQuiz />} />
           {/* 404 Not Found  as a catchall*/}
           <Route path="*" element={<h2>404 Not Found</h2>} />
         </Routes>
