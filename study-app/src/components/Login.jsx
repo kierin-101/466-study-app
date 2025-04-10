@@ -27,6 +27,7 @@ const Login = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label for="username">Username:</label>
         <input
+          required
           id="username"
           onChange={(e) => {
             setUsernameEntry(e.target.value);
@@ -36,6 +37,7 @@ const Login = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label for="password">Password:</label>
         <input
+          required
           type="password"
           id="password"
           onChange={(e) => {

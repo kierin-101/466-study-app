@@ -30,6 +30,7 @@ const SignUp = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label for="username">Username:</label>
         <input
+          required
           id="username"
           onChange={(e) => {
             setUsernameEntry(e.target.value);
@@ -39,6 +40,7 @@ const SignUp = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label for="password">Password:</label>
         <input
+          required
           type="password"
           id="password"
           onChange={(e) => {
@@ -58,6 +60,7 @@ const SignUp = () => {
         </legend>
         <div>
           <input
+            required
             type="radio"
             id="student"
             name="accountType"
@@ -70,6 +73,7 @@ const SignUp = () => {
         </div>
         <div>
           <input
+            required
             type="radio"
             id="teacher"
             name="accountType"

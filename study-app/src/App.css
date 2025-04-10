@@ -1,0 +1,15 @@
+.classOverviewLink {
+    display: flex;
+    width: 30vh;
+    height: 30vh;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: black;
+    border-radius: 8px;
+    border: solid 8px lightgrey;
+}
+
+.classOverviewLink.hover {
+    background-color: lightgrey;
+}
