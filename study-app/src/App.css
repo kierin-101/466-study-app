@@ -1,7 +1,7 @@
 .classOverviewLink {
     display: flex;
-    width: 30vh;
-    height: 30vh;
+    width: 20vw;
+    height: 20vw;
     align-items: center;
     justify-content: center;
     text-decoration: none;
@@ -10,6 +10,23 @@
     border: solid 8px lightgrey;
 }
 
-.classOverviewLink.hover {
-    background-color: lightgrey;
+.classOverviewLink:hover {
+    background: lightgrey;
+}
+
+.react-tabs__tab-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2% 8%;
+    height: 5vh;
+    background: gray;
+}
+
+.wrappingSquareList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    padding: 0px 16px 16px 16px;
+    gap: 16px;
 }

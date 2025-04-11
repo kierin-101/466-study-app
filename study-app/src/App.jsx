@@ -10,6 +10,7 @@ import JoinClass from './components/JoinClass'
 import Class from './components/Class'
 import CreateQuiz from './components/createQuiz'
 import TakeQuiz from './components/takeQuiz'
+import Shop from './components/Shop'
 import './App.css'
 
 
@@ -21,7 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/quizzes" element={<h2>Quizzes</h2>} />
-          <Route path="/shop" element={<h2>Shop</h2>} />
+          <Route path="/shop" element={<Shop />} />
           <Route path="/classes" element={<ClassOverview />} />
           <Route path="/joinClass" element={<JoinClass />} />
           <Route path="/createClass" element={<CreateClass />} />
