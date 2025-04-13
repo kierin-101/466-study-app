@@ -5,7 +5,7 @@ export default function CreateClass() {
   const [classSubject, setClassSubject] = useState('');
   const [pointsCap, setPointsCap] = useState(0);
 
-//how specific do we want to get with these
+  //how specific do we want to get with these
   const subjects = [
     "English",
     "Math",
@@ -21,7 +21,7 @@ export default function CreateClass() {
     "Psychology",
     "Language"
   ]
-  
+
   return (
     <form
       style={{
@@ -37,7 +37,7 @@ export default function CreateClass() {
     >
       <h1>Create a Class</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="username">Class Name:</label>
+        <label for="className">Class Name:</label>
         <input
           id="className"
           onChange={(e) => {
@@ -53,10 +53,10 @@ export default function CreateClass() {
             setClassSubject(e.target.value);
           }}
         >
-            <option disabled selected>Choose a Subject</option>
-            {subjects.map((subject) => {
-                return (<option>{subject}</option>)
-            })}
+          <option disabled selected>Choose a Subject</option>
+          {subjects.map((subject) => {
+            return (<option>{subject}</option>)
+          })}
         </select>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
