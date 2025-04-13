@@ -86,7 +86,6 @@ const SignUp = () => {
         </div>
       </div>
       <button
-        type="button"
         onClick={() => {
           console.log(
             `user: ${usernameEntry} password: ${passwordEntry} educatorStatus: ${isEducator}`

@@ -30,3 +30,13 @@
     padding: 0px 16px 16px 16px;
     gap: 16px;
 }
+
+.quizLink {
+    text-decoration: none;
+    color: black;
+}
+
+.quizLink:hover {
+    background: lightgrey;
+    border-radius: 8px;
+}
