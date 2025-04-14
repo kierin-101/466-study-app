@@ -44,6 +44,75 @@ export default function CreateQuiz() {
     // We'd actually send this off to the database but whatever
   }
 
+  const removeQuestion = (e, index) => {
+    e.preventDefault();
+    if (questionBank.length > 1) {
+      const updatedQuestions = [...questionBank];
+      updatedQuestions.splice(index, 1);
+      setQuestionBank(updatedQuestions);
+    } else {
+      alert('You must have at least one question in the quiz.');
+    }
+  };
+
+  const addOption = (e, index) => {
+    e.preventDefault();
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].options.push({ answer: 'New Option', isCorrect: false });
+    setQuestionBank(updatedQuestions);
+  };
+
+  const removeOption = (e, question, index, optIndex) => {
+    e.preventDefault();
+    if (question.options.length > 1) {
+      const updatedQuestions = [...questionBank];
+      updatedQuestions[index].options.splice(optIndex, 1);
+      setQuestionBank(updatedQuestions);
+    } else {
+      alert('You must have at least one option for each question.');
+    }
+  };
+
+  const toggleOptionCorrectness = (e, index, optIndex) => {
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].options[optIndex].isCorrect = e.target.checked;
+    setQuestionBank(updatedQuestions);
+  };
+
+  const updateOptionAnswer = (e, index, optIndex) => {
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].options[optIndex].answer = e.target.value;
+    setQuestionBank(updatedQuestions);
+  };
+
+  const handleMultiselectChange = (e, index) => {
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].multiselect = e.target.checked;
+    setQuestionBank(updatedQuestions);
+  };
+
+  const resetNegativePoints = (e, index) => {
+    if (e.target.value < 0) {
+      alert('Points cannot be negative. Setting to 0.');
+      e.target.value = 0;
+      const updatedQuestions = [...questionBank];
+      updatedQuestions[index].points = 0;
+      setQuestionBank(updatedQuestions);
+    }
+  };
+
+  const updateQuestionPoints = (e, index) => {
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].points = e.target.value;
+    setQuestionBank(updatedQuestions);
+  };
+
+  const updateQuestionText = (e, index) => {
+    const updatedQuestions = [...questionBank];
+    updatedQuestions[index].question = e.target.value;
+    setQuestionBank(updatedQuestions);
+  };
+
   return <form onSubmit={handleSubmit}>
     <style>
       {`
@@ -88,31 +157,31 @@ export default function CreateQuiz() {
     <h1>Create Quiz</h1>
     <div id="quizInfo">
       <h2>Quiz Information</h2>
-      <div class="row">
+      <div className="row">
         <label for="quizTitle">Quiz Title:</label>
         <input id="quizTitle" type="text" required onChange={
           (e) => setQuizTitle(e.target.value)
         } />
       </div>
-      <div class="row">
+      <div className="row">
         <label for="quizDescription">Quiz Description (optional):</label>
         <input id="quizDescription" type="text" onChange={
           (e) => setQuizDescription(e.target.value)
         } />
       </div>
-      <div class="row">
+      <div className="row">
         <label for="releaseDate">Release Date:</label>
         <input id="releaseDate" type="datetime-local" required onChange={
           (e) => setReleaseDate(e.target.value)
         } />
       </div>
-      <div class="row">
+      <div className="row">
         <label for="dueDate">Due Date:</label>
         <input id="dueDate" type="datetime-local" required onChange={
           (e) => setDueDate(e.target.value)
         } />
       </div>
-      <div class="row">
+      <div className="row">
         <label for="assignedClass">Assigned Class:</label>
         <select id="assignedClass" onChange={
           (e) => setAssignedClass(e.target.value)
@@ -124,7 +193,7 @@ export default function CreateQuiz() {
           <option value="class4">Class 4</option>
         </select>
       </div>
-      <div class="row">
+      <div className="row">
         <label for="targetScore">Target Score (optional):</label>
         <input id="targetScore" type="number" min="0"
           onChange={
@@ -152,105 +221,75 @@ export default function CreateQuiz() {
             <>
               <hr />
               <div key={index}>
-                <div class="row">
-                  <label for={`question${index}`}>Question {index + 1}: </label>
-                  <input id={`question${index}`} type="text" value={question.question} required onChange={
-                    (e) => {
-                      const updatedQuestions = [...questionBank];
-                      updatedQuestions[index].question = e.target.value;
-                      setQuestionBank(updatedQuestions);
-                    }
-                  } />
+                <div className="row">
+                  <label for={`question${index}`}>
+                    Question {index + 1}:
+                  </label>
+                  <input
+                    id={`question${index}`}
+                    type="text"
+                    value={question.question}
+                    required
+                    onChange={e => updateQuestionText(e, index)}
+                  />
                 </div>
-                <div class="row">
-                  <label for={`points${index}`}>Points:</label>
-                  <input id={`points${index}`} type="number" min="0" value={question.points} required
-                    onChange={
-                      (e) => {
-                        const updatedQuestions = [...questionBank];
-                        updatedQuestions[index].points = e.target.value;
-                        setQuestionBank(updatedQuestions);
-                      }
-                    }
-                    onBlur={
-                      (e) => {
-                        if (e.target.value < 0) {
-                          alert('Points cannot be negative. Setting to 0.');
-                          e.target.value = 0;
-                          const updatedQuestions = [...questionBank];
-                          updatedQuestions[index].points = 0;
-                          setQuestionBank(updatedQuestions);
-                        }
-                      }
-                    } />
+                <div className="row">
+                  <label for={`points${index}`}>
+                    Points:
+                  </label>
+                  <input
+                    id={`points${index}`}
+                    type="number"
+                    min="0"
+                    value={question.points}
+                    required
+                    onChange={e => updateQuestionPoints(e, index)}
+                    onBlur={e => resetNegativePoints(e, index)}
+                  />
                 </div>
-                <div class="row">
-                  <label for={`multiselect${index}`}>Multiple Select:</label>
-                  <input id={`multiselect${index}`} type="checkbox" checked={question.multiselect} onChange={
-                    (e) => {
-                      const updatedQuestions = [...questionBank];
-                      updatedQuestions[index].multiselect = e.target.checked;
-                      setQuestionBank(updatedQuestions);
-                    }
-                  } />
+                <div className="row">
+                  <label for={`multiselect${index}`}>
+                    Multiple Select:
+                  </label>
+                  <input
+                    id={`multiselect${index}`}
+                    type="checkbox"
+                    checked={question.multiselect}
+                    onChange={e => handleMultiselectChange(e, index)}
+                  />
                 </div>
                 <div>
                   {question.options.map((option, optIndex) => (
                     <div key={optIndex}>
-                      <label for={`optionQ${index}A${optIndex}`}>Option {optIndex + 1}:</label>
-                      <input id={`optionQ${index}A${optIndex}`} type="text" value={option.answer} required onChange={
-                        (e) => {
-                          const updatedQuestions = [...questionBank];
-                          updatedQuestions[index].options[optIndex].answer = e.target.value;
-                          setQuestionBank(updatedQuestions);
+                      <label for={`optionQ${index}A${optIndex}`}>
+                        Option {optIndex + 1}:
+                      </label>
+                      <input
+                        id={`optionQ${index}A${optIndex}`}
+                        type="text" value={option.answer}
+                        required
+                        onChange={e => updateOptionAnswer(e, index, optIndex)}
+                      />
+                      <label for={`correctQ${index}A${optIndex}`}>
+                        Correct Answer
+                      </label>
+                      <input type="checkbox"
+                        id={`correctQ${index}A${optIndex}`}
+                        onChange={e =>
+                          toggleOptionCorrectness(e, index, optIndex)
                         }
-                      } />
-                      <label for={`correctQ${index}A${optIndex}`}>Correct Answer</label>
-                      <input type="checkbox" id={`correctQ${index}A${optIndex}`} onChange={
-                        (e) => {
-                          const updatedQuestions = [...questionBank];
-                          updatedQuestions[index].options[optIndex].isCorrect = e.target.checked;
-                          setQuestionBank(updatedQuestions);
-                        }
-                      } checked={
-                        question.options[optIndex].isCorrect
-                      } />
+                        checked={question.options[optIndex].isCorrect} />
                       <button onClick={
-                        (e) => {
-                          e.preventDefault();
-                          if (question.options.length > 1) {
-                            const updatedQuestions = [...questionBank];
-                            updatedQuestions[index].options.splice(optIndex, 1);
-                            setQuestionBank(updatedQuestions);
-                          } else {
-                            alert('You must have at least one option for each question.');
-                          }
-                        }
-                      }>Remove Option</button>
+                        e => removeOption(e, question, index, optIndex)
+                      }>
+                        Remove Option
+                      </button>
                     </div>
                   ))}
-                  <button onClick={
-                    (e) => {
-                      e.preventDefault();
-                      const updatedQuestions = [...questionBank];
-                      updatedQuestions[index].options.push({ answer: 'New Option', isCorrect: false });
-                      setQuestionBank(updatedQuestions);
-                    }
-                  }>Add Option</button>
+                  <button onClick={e => addOption(e, index)}>Add Option</button>
                 </div>
               </div>
-              <button onClick={
-                (e) => {
-                  e.preventDefault();
-                  if (questionBank.length > 1) {
-                    const updatedQuestions = [...questionBank];
-                    updatedQuestions.splice(index, 1);
-                    setQuestionBank(updatedQuestions);
-                  } else {
-                    alert('You must have at least one question in the quiz.');
-                  }
-                }
-              }>Remove Question</button>
+              <button onClick={e => removeQuestion(e, index)}>Remove Question</button>
             </>
           )
         )

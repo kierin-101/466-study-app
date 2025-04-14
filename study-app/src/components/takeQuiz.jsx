@@ -4,8 +4,8 @@ export default function TakeQuiz() {
   // const [quizId, setQuizId] = useState('12345');
   const [quizTitle, setQuizTitle] = useState('Super Hard Quiz');
   const [quizDescription, setQuizDescription] = useState('This is the description.');
-  const [releaseDate, setReleaseDate] = useState('2023-10-01');
-  const [dueDate, setDueDate] = useState('2023-10-15');
+  const [releaseDate, setReleaseDate] = useState('2023-10-01 10:00 AM');
+  const [dueDate, setDueDate] = useState('2023-10-15 10:00 PM');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [questionBank, setQuestionBank] = useState([
     {
@@ -79,10 +79,8 @@ export default function TakeQuiz() {
         updatedAnswers[questionIndex].push(answer);
       }
     } else {
-      // If the question is single select, set the answer directly
       updatedAnswers[questionIndex] = [answer];
     }
-    // Update the userAnswers state
     setUserAnswers(updatedAnswers);
   }
 
@@ -90,7 +88,7 @@ export default function TakeQuiz() {
     e.preventDefault();
     // Logic to submit the quiz
     // check correctness of answers
-    const totalPoints = questionBank.reduce((acc, question) => acc + question.points, 0);
+    const totalPointsPossible = questionBank.reduce((acc, question) => acc + question.points, 0);
     let pointsEarned = 0;
     const results = questionBank.map((question, index) => {
       const correctAnswers = question.options
@@ -98,13 +96,20 @@ export default function TakeQuiz() {
         .map(option => option.answer);
 
       const userAnswer = userAnswers[index];
+      let userIsCorrect = false;
+      let pointsEarnedThisQuestion = 0;
 
-      const userIsCorrect = question.multiselect
-        ? userAnswer.length === correctAnswers.length &&
-        userAnswer.every(answer => correctAnswers.includes(answer))
-        : userAnswer[0] === correctAnswers[0];
-
-      pointsEarned += userIsCorrect ? question.points : 0;
+      if (question.multiselect) {
+        const correctCount = correctAnswers.filter(answer => userAnswer.includes(answer)).length;
+        const incorrectCount = userAnswer.filter(answer => !correctAnswers.includes(answer)).length;
+        pointsEarnedThisQuestion = (correctCount - incorrectCount) * (question.points / correctAnswers.length);
+        pointsEarned += pointsEarnedThisQuestion;
+        userIsCorrect = correctCount === correctAnswers.length && incorrectCount === 0;
+      } else {
+        userIsCorrect = userAnswer[0] === correctAnswers[0];
+        pointsEarnedThisQuestion = userIsCorrect ? question.points : 0
+        pointsEarned += pointsEarnedThisQuestion;
+      }
 
       document.querySelectorAll(`input[name="question-${index}"]`).forEach((input, i) => {
         if (question.options[i].isCorrect) {
@@ -120,11 +125,11 @@ export default function TakeQuiz() {
         correctAnswers,
         userIsCorrect,
         pointsPossible: question.points,
-        pointsEarned: userIsCorrect ? question.points : 0
+        pointsEarned: pointsEarnedThisQuestion
       };
     });
     // Display the results
-    alert(`You earned ${pointsEarned} out of ${totalPoints} points!`);
+    alert(`You earned ${pointsEarned} out of ${totalPointsPossible} points!`);
     console.log('Quiz submitted:', results);
   }
 
