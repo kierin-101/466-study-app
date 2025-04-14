@@ -102,13 +102,13 @@ export default function CreateQuiz() {
       </div>
       <div class="row">
         <label for="releaseDate">Release Date:</label>
-        <input id="releaseDate" type="date" required onChange={
+        <input id="releaseDate" type="datetime-local" required onChange={
           (e) => setReleaseDate(e.target.value)
         } />
       </div>
       <div class="row">
         <label for="dueDate">Due Date:</label>
-        <input id="dueDate" type="date" required onChange={
+        <input id="dueDate" type="datetime-local" required onChange={
           (e) => setDueDate(e.target.value)
         } />
       </div>
@@ -126,7 +126,7 @@ export default function CreateQuiz() {
       </div>
       <div class="row">
         <label for="targetScore">Target Score (optional):</label>
-        <input id="targetScore" type="number" min="0" required
+        <input id="targetScore" type="number" min="0"
           onChange={
             (e) => {
               setTargetScore(e.target.value);
@@ -135,6 +135,7 @@ export default function CreateQuiz() {
           onBlur={
             (e) => {
               if (e.target.value < 0) {
+                alert('Target score cannot be negative. Setting to 0.');
                 e.target.value = 0;
                 setTargetScore(0);
               }
@@ -171,10 +172,10 @@ export default function CreateQuiz() {
                         setQuestionBank(updatedQuestions);
                       }
                     }
-                    // set negative points to 0 when user clicks out points
                     onBlur={
                       (e) => {
                         if (e.target.value < 0) {
+                          alert('Points cannot be negative. Setting to 0.');
                           e.target.value = 0;
                           const updatedQuestions = [...questionBank];
                           updatedQuestions[index].points = 0;
