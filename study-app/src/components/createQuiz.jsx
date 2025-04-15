@@ -30,6 +30,15 @@ export default function CreateQuiz() {
 
   function handleSubmit(e) {
     e.preventDefault();
+    // check to make sure each question has at least one correct answer
+    const questionsMissingCorrectAnswer = questionBank.filter(question => {
+      const correctAnswers = question.options.filter(option => option.isCorrect);
+      return correctAnswers.length === 0;
+    });
+    if (questionsMissingCorrectAnswer) {
+      alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} are missing correct answers.`);
+      return;
+    }
     const quizData = {
       title: quizTitle,
       description: quizDescription,
@@ -37,7 +46,6 @@ export default function CreateQuiz() {
       dueDate: dueDate,
       questions: questionBank,
       assignedClass: assignedClass,
-      createdBy: 'User ID',
       targetScore: targetScore
     };
     console.log('Quiz Data:', quizData);
@@ -152,6 +160,11 @@ export default function CreateQuiz() {
         width: 150px;
         display: inline-block;
       }
+      .char-counter {
+        margin-left: 10px;
+        font-size: 0.8em;
+        color: #666;
+      }
       `}
     </style>
     <h1>Create Quiz</h1>
@@ -159,15 +172,26 @@ export default function CreateQuiz() {
       <h2>Quiz Information</h2>
       <div className="row">
         <label for="quizTitle">Quiz Title:</label>
-        <input id="quizTitle" type="text" required maxLength={100} onChange={
+        <input id="quizTitle" type="text" required maxLength={100} value={quizTitle} onChange={
           (e) => setQuizTitle(e.target.value)
         } />
+        <span className="char-counter">
+          {100 - quizTitle.length} chars left
+        </span>
       </div>
       <div className="row">
         <label for="quizDescription">Quiz Description (optional):</label>
-        <input id="quizDescription" type="text" maxLength={1000} onChange={
-          (e) => setQuizDescription(e.target.value)
-        } />
+        <input
+          id="quizDescription"
+          type="text"
+          maxLength={1000}
+          value={quizDescription}
+          onChange={(e) => setQuizDescription(e.target.value)}
+          required
+        />
+        <span className="char-counter">
+          {1000 - quizDescription.length} chars left
+        </span>
       </div>
       <div className="row">
         <label for="releaseDate">Release Date:</label>
@@ -229,10 +253,11 @@ export default function CreateQuiz() {
                     id={`question${index}`}
                     type="text"
                     maxLength={1000}
-                    value={question.question}
+                    placeholder={question.question}
                     required
                     onChange={e => updateQuestionText(e, index)}
                   />
+                  <span className="char-counter">{1000 - question.question.length} chars left</span>
                 </div>
                 <div className="row">
                   <label for={`points${index}`}>
@@ -267,11 +292,12 @@ export default function CreateQuiz() {
                       </label>
                       <input
                         id={`optionQ${index}A${optIndex}`}
-                        type="text" value={option.answer}
+                        type="text" placeholder={option.answer}
                         maxLength={1000}
                         required
                         onChange={e => updateOptionAnswer(e, index, optIndex)}
                       />
+                      <span className="char-counter">{1000 - option.answer.length} chars left</span>
                       <label for={`correctQ${index}A${optIndex}`}>
                         Correct Answer
                       </label>
@@ -288,10 +314,14 @@ export default function CreateQuiz() {
                       </button>
                     </div>
                   ))}
-                  <button onClick={e => addOption(e, index)}>Add Option</button>
+                  <button onClick={
+                    e => addOption(e, index)
+                  }>Add Option</button>
                 </div>
               </div>
-              <button onClick={e => removeQuestion(e, index)}>Remove Question</button>
+              <button onClick={
+                e => removeQuestion(e, index)
+              }>Remove Question</button>
             </>
           )
         )
