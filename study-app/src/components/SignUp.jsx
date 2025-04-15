@@ -13,6 +13,17 @@ const SignUp = () => {
   //also any form of username/password validation we end up doing. and whatever stage we do password encryption at
   //we didn't put an email or anything in the database so none of that. take care not to forget your password
 
+  const registerUser = (e) => {
+    e.preventDefault(); // prevent refresh
+    const user = {
+      username: usernameEntry,
+      password: passwordEntry,
+      educatorStatus: isEducator,
+    };
+    console.log(user);
+    // call user creation API
+  }
+
   return (
     <form
       style={{
@@ -25,7 +36,7 @@ const SignUp = () => {
         background: "lightgrey",
         borderRadius: "16px",
       }}
-    >
+      onSubmit={registerUser}>
       <h1>Sign Up</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label for="username">Username:</label>
@@ -85,15 +96,7 @@ const SignUp = () => {
           <label for="teacher">Teacher</label>
         </div>
       </div>
-      <button
-        onClick={() => {
-          console.log(
-            `user: ${usernameEntry} password: ${passwordEntry} educatorStatus: ${isEducator}`
-          );
-        }}
-      >
-        Sign Up
-      </button>
+      <button type="submit">Sign Up</button>
       <p>
         Already have an account? <a href="/login">Log in now!</a>
       </p>
