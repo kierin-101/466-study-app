@@ -159,13 +159,13 @@ export default function CreateQuiz() {
       <h2>Quiz Information</h2>
       <div className="row">
         <label for="quizTitle">Quiz Title:</label>
-        <input id="quizTitle" type="text" required onChange={
+        <input id="quizTitle" type="text" required maxLength={100} onChange={
           (e) => setQuizTitle(e.target.value)
         } />
       </div>
       <div className="row">
         <label for="quizDescription">Quiz Description (optional):</label>
-        <input id="quizDescription" type="text" onChange={
+        <input id="quizDescription" type="text" maxLength={1000} onChange={
           (e) => setQuizDescription(e.target.value)
         } />
       </div>
@@ -228,6 +228,7 @@ export default function CreateQuiz() {
                   <input
                     id={`question${index}`}
                     type="text"
+                    maxLength={1000}
                     value={question.question}
                     required
                     onChange={e => updateQuestionText(e, index)}
@@ -267,6 +268,7 @@ export default function CreateQuiz() {
                       <input
                         id={`optionQ${index}A${optIndex}`}
                         type="text" value={option.answer}
+                        maxLength={1000}
                         required
                         onChange={e => updateOptionAnswer(e, index, optIndex)}
                       />
