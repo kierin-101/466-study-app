@@ -1,0 +1,24 @@
+{
+  "name": "466-study-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix study-app run dev\" \"node ./server/index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kierin-101/466-study-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kierin-101/466-study-app/issues"
+  },
+  "homepage": "https://github.com/kierin-101/466-study-app#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
