@@ -1,0 +1,20 @@
+POST http://localhost:5000/api/class/create
+Content-Type: application/json
+
+{
+  "class_name": "Test Class",
+  "subject": "Science",
+  "daily_point_cap": 10
+}
+### GET CLASS INFO (basic info)
+GET http://localhost:5000/api/class/1
+
+### GET CLASS MEMBERS (with active rewards)
+GET http://localhost:5000/api/class/1/members
+
+
+### GET CLASS QUIZZES
+GET http://localhost:5000/api/class/1/quizzes
+
+### GET CLASS MEMBERS (with active rewards)
+GET http://localhost:5000/api/class/1/members

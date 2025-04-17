@@ -4,6 +4,7 @@ const cors = require('cors');
 const session = require('express-session');
 const sql = require('mssql');
 const accountRoutes = require('./routes/accountRoutes');
+const classRoutes = require('./routes/classRoutes');
 const app = express();
 
 // Database connection configuration
@@ -39,6 +40,7 @@ app.use(
 
 // Routes
 app.use('/api/account', accountRoutes);
+app.use('/api/class', classRoutes);
 
 // Start the server
 const port = process.env.PORT || 5000;
