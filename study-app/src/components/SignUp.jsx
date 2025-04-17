@@ -58,6 +58,7 @@ const SignUp = () => {
         <input
           required
           id="username"
+          maxLength={100}
           onChange={(e) => {
             setUsernameEntry(e.target.value);
           }}
@@ -69,6 +70,7 @@ const SignUp = () => {
           required
           type="password"
           id="password"
+          maxLength={64}
           onChange={(e) => {
             setPasswordEntry(e.target.value);
           }}

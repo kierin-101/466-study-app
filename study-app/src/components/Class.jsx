@@ -79,9 +79,11 @@ const Class = () => {
 
   const removeMember = (personDetails, index) => {
     //add logic to actually remove this person from the class in db
-    const updatedPeople = [...peopleList];
-    updatedPeople.splice(index, 1);
-    setPeopleList(updatedPeople);
+    if (window.confirm(`Are you sure you want to remove ${personDetails.username} from the class?`)) {
+      const updatedPeople = [...peopleList];
+      updatedPeople.splice(index, 1);
+      setPeopleList(updatedPeople);
+    }
   }
 
   const displayQuiz = (quizDetails) => {
