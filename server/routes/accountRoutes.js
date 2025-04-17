@@ -12,7 +12,7 @@ const getPool = async (config) => {
 
 // Route to register a new user
 router.post('/register', async (req, res) => {
-  const { username, password, is_teacher = 0 } = req.body;
+  const { username, password, is_teacher } = req.body;
   const config = req.config;
 
   if (!username || !password) {
@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
       .input('username', sql.NVarChar, username)
       .input('password_sha256', sql.NVarChar, hashedPassword)
       .input('is_teacher', sql.Int, is_teacher)
-      .input('points', sql.Int, 0) 
+      .input('points', sql.Int, 0)
       .query('INSERT INTO Users (username, password_sha256, is_teacher, points) VALUES (@username, @password_sha256, @is_teacher, @points)');
 
     res.status(201).json({ message: 'User registered successfully' });
@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
 
 // Route to handle user login
 router.post('/login', async (req, res) => {
-  const { username, password, is_teacher = 0 } = req.body;
+  const { username, password, is_teacher } = req.body;
   const config = req.config;
 
   if (!username || !password) {

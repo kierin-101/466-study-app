@@ -3,25 +3,40 @@ import { useState } from "react";
 const SignUp = () => {
   const [usernameEntry, setUsernameEntry] = useState("");
   const [passwordEntry, setPasswordEntry] = useState("");
-  const [isEducator, setIsEducator] = useState(false);
-
-  // const registerUser = () => {}
-  //here, we'll have to:
-  //check that our username isn't taken already
-  //if it is, notify user, do nothing else
-  //if not, add the account to db and log in under those credentials, redirect to home
-  //also any form of username/password validation we end up doing. and whatever stage we do password encryption at
-  //we didn't put an email or anything in the database so none of that. take care not to forget your password
+  const [educatorStatus, setEducatorStatus] = useState(false);
 
   const registerUser = (e) => {
     e.preventDefault(); // prevent refresh
     const user = {
       username: usernameEntry,
       password: passwordEntry,
-      educatorStatus: isEducator,
+      is_teacher: educatorStatus,
     };
     console.log(user);
     // call user creation API
+    fetch("http://localhost:5000/api/account/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to register user");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        // redirect to home page or show success message
+        // window.location.href = "/home";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // alert("Registration failed. Please try again.");
+      });
   }
 
   return (
@@ -77,7 +92,7 @@ const SignUp = () => {
             name="accountType"
             value={false}
             onClick={() => {
-              setIsEducator(false);
+              setEducatorStatus(false);
             }}
           />
           <label for="student">Student</label>
@@ -90,7 +105,7 @@ const SignUp = () => {
             name="accountType"
             value={true}
             onClick={() => {
-              setIsEducator(true);
+              setEducatorStatus(true);
             }}
           />
           <label for="teacher">Teacher</label>
