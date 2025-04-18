@@ -104,7 +104,7 @@ export default function CreateQuiz() {
     setQuestionBank(updatedQuestions);
   };
 
-  const resetNegativePoints = (e, index) => {
+  const updateQuestionPoints = (e, question, index) => {
     if (e.target.value < 0) {
       alert('Points cannot be negative. Setting to 0.');
       e.target.value = 0;
@@ -114,15 +114,12 @@ export default function CreateQuiz() {
       });
       setQuestionBank(updatedQuestions);
     }
-  };
-
-  const updateQuestionPoints = (e, question, index) => {
     const updatedQuestions = [...questionBank];
+    const numCorrectAnswers = updatedQuestions[index].options.filter(option => option.isCorrect).length;
     updatedQuestions[index].options.forEach(option => {
       if (option.isCorrect) {
         option.points = e.target.value;
         if (question.multiselect) {
-          const numCorrectAnswers = updatedQuestions[index].options.filter(option => option.isCorrect).length;
           option.points = e.target.value / numCorrectAnswers;
         }
       } else {
@@ -274,7 +271,7 @@ export default function CreateQuiz() {
                     value={question.points}
                     required
                     onChange={e => updateQuestionPoints(e, question, index)}
-                    onBlur={e => resetNegativePoints(e, index)}
+                    onBlur={e => updateQuestionPoints(e, question, index)}
                   />
                 </div>
                 <div className="row">
