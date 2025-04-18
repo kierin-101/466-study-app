@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 export default function CreateClass() {
   const [className, setClassName] = useState('');
   const [classSubject, setClassSubject] = useState('');
-  const [pointsCap, setPointsCap] = useState(0);
+  const [pointsCap, setPointsCap] = useState(100);
+
+  //todo: add some logic to restrict access to this page for students
 
   //how specific do we want to get with these
   const subjects = [
@@ -22,6 +24,54 @@ export default function CreateClass() {
     "Language"
   ]
 
+  const submitClass = (e) => {
+    e.preventDefault(); // prevent refresh
+    const classInfo = {
+      class_name: className,
+      subject: classSubject,
+      daily_point_cap: pointsCap,
+    };
+    console.log(classInfo);
+    // call class creation API
+    fetch("http://localhost:5000/api/class/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(classInfo),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to create class.");
+        }
+      })
+      .then((data) => {
+        console.log(data.class.class_id);
+        fetch("http://localhost:5000/api/class/join", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({class_id: data.class.class_id}),
+        })
+          .then((response) => {
+            if (response.ok) {
+              if (window.confirm("Successfully created your class! View it now?")) {
+                window.location.href = './class';
+              }
+            } else {
+              throw new Error("Failed to join the created class.");
+            }
+      })})
+      .catch((error) => {
+        console.error("Error:", error);
+        alert(error);
+      });
+  }
+
   return (
     <form
       style={{
@@ -34,6 +84,7 @@ export default function CreateClass() {
         background: "lightgrey",
         borderRadius: "16px",
       }}
+      onSubmit={submitClass}
     >
       <h1>Create a Class</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -64,22 +115,15 @@ export default function CreateClass() {
         <input
           id="points"
           type="number"
-          value="100"
           min="100"
           max="500"
+          value={pointsCap}
           onChange={(e) => {
             setPointsCap(e.target.value);
           }}
         ></input>
       </div>
-      <button
-        type="button"
-        onClick={() => {
-          console.log(
-            `name: ${className} subject: ${classSubject} pointcap: ${pointsCap}`
-          );
-        }}
-      >
+      <button>
         Create Now
       </button>
       <br />

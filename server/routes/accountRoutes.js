@@ -83,6 +83,7 @@ router.post('/login', async (req, res) => {
     // Store user info in session after successful login
     req.session.userId = user.user_id;
     req.session.username = user.username;
+    req.session.isTeacher = user.is_teacher;
     
     res.json({ message: 'Login successful' });
   } catch (err) {
@@ -98,8 +99,8 @@ router.get('/me', (req, res) => {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
-  const { userId, username } = req.session;
-  res.json({ userId, username });
+  const { userId, username, isTeacher } = req.session;
+  res.json({ userId, username, isTeacher });
 });
 
 // Logout route

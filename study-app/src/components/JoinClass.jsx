@@ -4,25 +4,69 @@ export default function JoinClass() {
   const [idEntered, setIdEntered] = useState();
   const [searchResult, setSearchResult] = useState(null);
 
+  //TODO: add some logic to restrict access to this page for teachers
+
   const findClass = () => {
     console.log(`code: ${idEntered}`);
-    const classData = 1; //this'll be a database fetch eventually
-    if (classData) {
+    fetch(`http://localhost:5000/api/class/${idEntered}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve classes.");
+        }
+      })
+      .then((data) => {
         setSearchResult(
-            <div>
+            <div style={{textAlign: "center"}}>
                 <h2>Found a class!</h2>
-                <p>Its details go here.</p>
+                <h3>{data.class_name}</h3>
+                <p>Subject: {data.subject}</p>
                 <button type="button" onClick={confirmJoin}>Confirm Join</button>
             </div>
         );
-    } else {
-        setSearchResult(<p>{`No class found with id ${idEntered}`}</p>);
-    }   
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setSearchResult(<p>{`Couldn't find a class with code ${idEntered}. Check the code and try again.`}</p>);
+      });
   }
 
   const confirmJoin = () => {
     //this'll add the user to their class and redirect them to the class
-    window.location.href = '../class'
+    const classData = {
+      class_id: idEntered
+    };
+    fetch(`http://localhost:5000/api/class/join`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(classData),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to join class.");
+        }
+      })
+      .then(() => {
+        if (window.confirm("You were successfully added to the class! Go there now?")) {
+          window.location.href = './class';
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setSearchResult(<p>{`There was a problem adding you to the class.`}</p>);
+      });
   }
   
   return (

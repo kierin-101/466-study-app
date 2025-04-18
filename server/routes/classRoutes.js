@@ -35,7 +35,7 @@ router.post('/join', async (req, res) => {
     }
 
     const existing = await pool.request()
-    .input('user_id,', sql.Int, userId)
+    .input('user_id', sql.Int, userId)
     .input('class_id', sql.Int, class_id)
     .query('SELECT * FROM UserClasses WHERE user_id = @user_id AND class_id = @class_id');
 
@@ -47,7 +47,7 @@ router.post('/join', async (req, res) => {
     await pool.request()
     .input('user_id', sql.Int, userId)
     .input('class_id', sql.Int, class_id)
-    .query('INSERT INTO UserClasses (user_id, class_id) VALUES (@userId, @class_id)');
+    .query('INSERT INTO UserClasses (user_id, class_id) VALUES (@user_id, @class_id)');
 
     res.status(201).json({message: 'Successfully joined class'});
 

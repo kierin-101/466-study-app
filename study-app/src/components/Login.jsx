@@ -14,6 +14,7 @@ const Login = () => {
     // call user auth API
     fetch("http://localhost:5000/api/account/login", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

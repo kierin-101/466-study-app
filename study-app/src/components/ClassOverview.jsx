@@ -1,37 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ClassOverview = () => {
+  const [useTeacherOptions, setUseTeacherOptions] = useState(); 
+  const [classList, setClassList] = useState([]);
 
-  //in an effect hook (presumably, will have to retrieve class data and provide links to all user clases)
-  const mockClasses = [
-    {
-      classId: 1,
-      className: "Class A",
-      subject: "English",
-      daily_point_cap: 100
-    },
-    {
-      classId: 2,
-      className: "Class B",
-      subject: "Math",
-      daily_point_cap: 400
-    }
-  ]
-
-  const userClasses = mockClasses;  //for now
+  useEffect (() => {
+    //decide if we're a teacher
+    fetch("http://localhost:5000/api/account/me", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve classes.");
+        }
+      })
+      .then((data) => {
+        setUseTeacherOptions(data.isTeacher);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
+    // call class overview API
+    fetch("http://localhost:5000/api/class/overview", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve classes.");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        setClassList(data.classes);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
 
   return (
     <div>
       <h1 style={{marginLeft: "16px"}}>My Classes</h1>
       <div className="wrappingSquareList">
-        <div><a className="classOverviewLink" style={{fontSize:"8em"}} href={"/joinClass"}>+</a></div>
-        <div><a className="classOverviewLink" href={"/createClass"}>new</a></div>
-        {userClasses.map((c) => {
+        <div><a className="classOverviewLink" style={{fontSize:"8em"}} href={useTeacherOptions ? "/createClass" : "/joinClass"}>+</a></div>
+        {classList.map((c) => {
           return (
             <div>
               <a key={`classLink${c.classId}`} className="classOverviewLink" href={`/class?${c.classId}`}>
-                <div style={{display:"flex", flexDirection: "column", alignItems: "center"}}>
-                  <h1>{c.className}</h1>
+                <div style={{display:"flex", flexDirection: "column", alignItems: "center", textAlign: "center"}}>
+                  <h1>{c.class_name}</h1>
                   <h2>{c.subject}</h2>
                 </div>
               </a>

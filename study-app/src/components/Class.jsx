@@ -51,6 +51,8 @@ const Class = () => {
   const [quizList, setQuizList] = useState(mockQuizzes.concat(mockQuizzes));
   // also will have to read the class data obviously
 
+  //TODO: read classId from url, then fetch people and quizzes accordingly
+
   const ClassSidebar = () => {
     return (
       <div style={{ height: "100%", width: "20vw", maxWidth: "20vw", background: "lightgrey", position: "fixed" }}>
