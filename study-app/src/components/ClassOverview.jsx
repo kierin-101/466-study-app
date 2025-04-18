@@ -1,7 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ClassOverview = () => {
+  const [showTeacherOptions] = useState();
+  const [classList, setClassList] = useState();
 
+  useEffect (() => {
+    // call class overview API
+    fetch("http://localhost:5000/api/class/overview", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve classes.");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        // redirect to home page or show success message
+        // window.location.href = "/home";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
   //in an effect hook (presumably, will have to retrieve class data and provide links to all user clases)
   const mockClasses = [
     {

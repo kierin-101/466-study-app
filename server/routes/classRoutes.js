@@ -90,6 +90,7 @@ router.post('/create', async (req, res) => {
 router.get('/overview', async (req, res) => {
   const config = req.config;
   const userId = req.session?.userId;
+  console.log(userId);
 
   if (!userId) {
     return res.status(401).json({ message: 'Not authenticated' });
