@@ -9,36 +9,36 @@ export default function CreateQuiz() {
   const [targetScore, setTargetScore] = useState(0);
   const [questionBank, setQuestionBank] = useState([
     {
-      question: 'Untitled question', points: 10, multiselect: false, options: [
-        { answer: 'Answer 1', isCorrect: false },
-        { answer: 'Answer 2', isCorrect: true },
-        { answer: 'Answer 3', isCorrect: false },
-        { answer: 'Answer 4', isCorrect: false }]
+      question: 'Untitled question', multiselect: false, options: [
+        { answer: 'Answer 1', isCorrect: false, points: 0 },
+        { answer: 'Answer 2', isCorrect: true, points: 10 },
+        { answer: 'Answer 3', isCorrect: false, points: 0 },
+        { answer: 'Answer 4', isCorrect: false, points: 0 }]
     },
   ]);
 
   function addQuestion(e) {
     e.preventDefault();
     setQuestionBank([...questionBank, {
-      question: 'New question', points: 10, multiselect: false, options: [
-        { answer: 'Answer 1', isCorrect: false },
-        { answer: 'Answer 2', isCorrect: true },
-        { answer: 'Answer 3', isCorrect: false },
-        { answer: 'Answer 4', isCorrect: false }]
+      question: 'New question', multiselect: false, options: [
+        { answer: 'Answer 1', isCorrect: false, points: 0 },
+        { answer: 'Answer 2', isCorrect: true, points: 10 },
+        { answer: 'Answer 3', isCorrect: false, points: 0 },
+        { answer: 'Answer 4', isCorrect: false, points: 0 }]
     }]);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
     // check to make sure each question has at least one correct answer
-    const questionsMissingCorrectAnswer = questionBank.filter(question => {
-      const correctAnswers = question.options.filter(option => option.isCorrect);
-      return correctAnswers.length === 0;
-    });
-    if (questionsMissingCorrectAnswer) {
-      alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} are missing correct answers.`);
-      return;
-    }
+    // const questionsMissingCorrectAnswer = questionBank.filter(question => {
+    //   const correctAnswers = question.options.filter(option => option.isCorrect);
+    //   return correctAnswers.length === 0;
+    // });
+    // if (questionsMissingCorrectAnswer) {
+    //   alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} are missing correct answers.`);
+    //   return;
+    // }
     const quizData = {
       title: quizTitle,
       description: quizDescription,
@@ -66,7 +66,7 @@ export default function CreateQuiz() {
   const addOption = (e, index) => {
     e.preventDefault();
     const updatedQuestions = [...questionBank];
-    updatedQuestions[index].options.push({ answer: 'New Option', isCorrect: false });
+    updatedQuestions[index].options.push({ answer: 'New Option', isCorrect: false, points: 0 });
     setQuestionBank(updatedQuestions);
   };
 
@@ -104,14 +104,25 @@ export default function CreateQuiz() {
       alert('Points cannot be negative. Setting to 0.');
       e.target.value = 0;
       const updatedQuestions = [...questionBank];
-      updatedQuestions[index].points = 0;
+      updatedQuestions[index].options.forEach(option => {
+        option.points = 0;
+      });
       setQuestionBank(updatedQuestions);
     }
   };
 
   const updateQuestionPoints = (e, index) => {
     const updatedQuestions = [...questionBank];
-    updatedQuestions[index].points = e.target.value;
+    const numCorrectAnswers = updatedQuestions[index].options.filter(option => option.isCorrect).length;
+    updatedQuestions[index].options.forEach(option => {
+      // distribute points based on the number of correct answers
+      if (option.isCorrect) {
+        option.points = e.target.value / numCorrectAnswers;
+        console.log('Points:', option.points);
+      } else {
+        option.points = 0;
+      }
+    });
     setQuestionBank(updatedQuestions);
   };
 
