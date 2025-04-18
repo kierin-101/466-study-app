@@ -47,7 +47,14 @@ export default function CreateQuiz() {
       targetScore: targetScore
     };
     console.log('Quiz Data:', quizData);
-    // We'd actually send this off to the database but whatever
+
+    fetch("http://localhost:5000/api/quiz/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(quizData),
+    })
   }
 
   const removeQuestion = (e, index) => {
