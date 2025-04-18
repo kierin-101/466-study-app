@@ -5,7 +5,6 @@ export default function CreateQuiz() {
   const [quizDescription, setQuizDescription] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [assignedClass, setAssignedClass] = useState('');
   const [targetScore, setTargetScore] = useState(0);
   const [questionBank, setQuestionBank] = useState([
     {
@@ -31,21 +30,20 @@ export default function CreateQuiz() {
   function handleSubmit(e) {
     e.preventDefault();
     // check to make sure each question has at least one correct answer
-    // const questionsMissingCorrectAnswer = questionBank.filter(question => {
-    //   const correctAnswers = question.options.filter(option => option.isCorrect);
-    //   return correctAnswers.length === 0;
-    // });
-    // if (questionsMissingCorrectAnswer) {
-    //   alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} are missing correct answers.`);
-    //   return;
-    // }
+    const questionsMissingCorrectAnswer = questionBank.filter(question => {
+      return question.options.filter(option => option.isCorrect).length === 0;
+    });
+    if (questionsMissingCorrectAnswer.length > 0) {
+      alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} missing correct answers.`);
+      return;
+    }
     const quizData = {
       title: quizTitle,
       description: quizDescription,
       releaseDate: releaseDate,
       dueDate: dueDate,
       questions: questionBank,
-      assignedClass: assignedClass,
+      assignedClass: new URLSearchParams(window.location.search).get('class'),
       targetScore: targetScore
     };
     console.log('Quiz Data:', quizData);
@@ -198,7 +196,6 @@ export default function CreateQuiz() {
           maxLength={1000}
           value={quizDescription}
           onChange={(e) => setQuizDescription(e.target.value)}
-          required
         />
         <span className="char-counter">
           {1000 - quizDescription.length} chars left
@@ -215,18 +212,6 @@ export default function CreateQuiz() {
         <input id="dueDate" type="datetime-local" required onChange={
           (e) => setDueDate(e.target.value)
         } />
-      </div>
-      <div className="row">
-        <label for="assignedClass">Assigned Class:</label>
-        <select id="assignedClass" onChange={
-          (e) => setAssignedClass(e.target.value)
-        } required>
-          <option value="">Select Class</option>
-          <option value="class1">Class 1</option>
-          <option value="class2">Class 2</option>
-          <option value="class3">Class 3</option>
-          <option value="class4">Class 4</option>
-        </select>
       </div>
       <div className="row">
         <label for="targetScore">Target Score (optional):</label>
