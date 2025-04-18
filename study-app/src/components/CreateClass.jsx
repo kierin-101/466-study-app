@@ -91,6 +91,8 @@ export default function CreateClass() {
         <label for="className">Class Name:</label>
         <input
           id="className"
+          required
+          maxLength={100}
           onChange={(e) => {
             setClassName(e.target.value);
           }}
@@ -100,6 +102,7 @@ export default function CreateClass() {
         <label for="subject">Subject:</label>
         <select
           id="subject"
+          required
           onChange={(e) => {
             setClassSubject(e.target.value);
           }}
@@ -115,6 +118,7 @@ export default function CreateClass() {
         <input
           id="points"
           type="number"
+          required
           min="100"
           max="500"
           value={pointsCap}

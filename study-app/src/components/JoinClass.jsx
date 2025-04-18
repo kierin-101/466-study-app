@@ -6,7 +6,8 @@ export default function JoinClass() {
 
   //TODO: add some logic to restrict access to this page for teachers
 
-  const findClass = () => {
+  const findClass = (e) => {
+    e.preventDefault(); // prevent refresh
     console.log(`code: ${idEntered}`);
     fetch(`http://localhost:5000/api/class/${idEntered}`, {
       method: "GET",
@@ -38,7 +39,8 @@ export default function JoinClass() {
       });
   }
 
-  const confirmJoin = () => {
+  const confirmJoin = (e) => {
+    e.preventDefault(); // prevent refresh
     //this'll add the user to their class and redirect them to the class
     const classData = {
       class_id: idEntered
