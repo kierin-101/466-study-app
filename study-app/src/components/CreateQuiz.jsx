@@ -116,14 +116,15 @@ export default function CreateQuiz() {
     }
   };
 
-  const updateQuestionPoints = (e, index) => {
+  const updateQuestionPoints = (e, question, index) => {
     const updatedQuestions = [...questionBank];
-    const numCorrectAnswers = updatedQuestions[index].options.filter(option => option.isCorrect).length;
     updatedQuestions[index].options.forEach(option => {
-      // distribute points based on the number of correct answers
       if (option.isCorrect) {
-        option.points = e.target.value / numCorrectAnswers;
-        console.log('Points:', option.points);
+        option.points = e.target.value;
+        if (question.multiselect) {
+          const numCorrectAnswers = updatedQuestions[index].options.filter(option => option.isCorrect).length;
+          option.points = e.target.value / numCorrectAnswers;
+        }
       } else {
         option.points = 0;
       }
@@ -272,7 +273,7 @@ export default function CreateQuiz() {
                     min="0"
                     value={question.points}
                     required
-                    onChange={e => updateQuestionPoints(e, index)}
+                    onChange={e => updateQuestionPoints(e, question, index)}
                     onBlur={e => resetNegativePoints(e, index)}
                   />
                 </div>
