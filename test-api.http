@@ -1,3 +1,28 @@
+### Register a test user
+POST http://localhost:5000/api/account/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test123",
+  "is_teacher": 0
+}
+
+
+### Login
+POST http://localhost:5000/api/account/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test123"
+}
+
+
+### GET current session user info
+GET http://localhost:5000/api/account/me
+
+### Create a class
 POST http://localhost:5000/api/class/create
 Content-Type: application/json
 
@@ -18,3 +43,6 @@ GET http://localhost:5000/api/class/1/quizzes
 
 ### GET CLASS MEMBERS (with active rewards)
 GET http://localhost:5000/api/class/1/members
+
+### GET class overview for logged-in user
+GET http://localhost:5000/api/class/overview
