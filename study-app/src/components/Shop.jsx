@@ -151,10 +151,12 @@ const Shop = () => {
   }
 
   const handlePurchase = (itemDetails) => {
-    //for mocking purposes
-    itemDetails.isOwned = true;
-    setDisplayedPoints(displayedPoints - itemDetails.pointsCost);
-    //setRefreshData(true);
+    if (window.confirm(`Are you sure you want to purchase ${itemDetails.rewardName} for ${itemDetails.pointsCost} points?`)) {
+      //for mocking purposes
+      itemDetails.isOwned = true;
+      setDisplayedPoints(displayedPoints - itemDetails.pointsCost);
+      //setRefreshData(true);
+    }
   }
 
 

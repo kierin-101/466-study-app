@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
@@ -7,6 +6,8 @@ const accountRoutes = require('./routes/accountRoutes');
 const classRoutes = require('./routes/classRoutes');
 const app = express();
 
+require('dotenv').config({ path: __dirname + '/.env' });
+app.use(express.json());
 // Database connection configuration
 const config = {
   user: process.env.DB_USER,

@@ -4,11 +4,37 @@ const Login = () => {
   const [usernameEntry, setUsernameEntry] = useState("");
   const [passwordEntry, setPasswordEntry] = useState("");
 
-  //const authenticateUser = () => {}
-  //here we'll have to validate credentials
-  //if no such user exists, notify
-  //if password does not match, notify
-  //if we did enter correct credentials, log in and redirect to home
+  const authenticateUser = (e) => {
+    e.preventDefault(); // prevent refresh
+    const user = {
+      username: usernameEntry,
+      password: passwordEntry
+    };
+    console.log(user);
+    // call user auth API
+    fetch("http://localhost:5000/api/account/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Login failed.");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        window.location.href = "/";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Your login attempt failed. Please check your credentials and try again.");
+      });
+  }
 
   return (
     <form
@@ -22,6 +48,7 @@ const Login = () => {
         background: "lightgrey",
         borderRadius: "16px",
       }}
+      onSubmit={authenticateUser}
     >
       <h1>Login</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -29,6 +56,7 @@ const Login = () => {
         <input
           required
           id="username"
+          maxLength={100}
           onChange={(e) => {
             setUsernameEntry(e.target.value);
           }}
@@ -40,6 +68,7 @@ const Login = () => {
           required
           type="password"
           id="password"
+          maxLength={64}
           onChange={(e) => {
             setPasswordEntry(e.target.value);
           }}
