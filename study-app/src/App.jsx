@@ -44,6 +44,9 @@ function App() {
       })
       .catch((error) => {
         console.error("Error:", error);
+        setTeacherView(false);
+        setLoggedIn(false);
+        setLoading(false);
       })
   }, []);
 
