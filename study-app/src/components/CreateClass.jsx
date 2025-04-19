@@ -58,7 +58,7 @@ export default function CreateClass({teacherView}) {
           .then((response) => {
             if (response.ok) {
               if (window.confirm("Successfully created your class! View it now?")) {
-                window.location.href = './class';
+                window.location.href = `./class?class=${data.class.class_id}`;
               }
             } else {
               throw new Error("Failed to join the created class.");

@@ -5,7 +5,7 @@ import AvatarDisplay from "./AvatarDisplay";
 //TODOs: verify someone is a member of the class they're trying to access before loading details,
 //and read the active rewards data for people display (come back to this once shop routes are live)
 
-const Class = ({ teacherView }) => {
+const Class = ({ userId, teacherView }) => {
   const classId = new URLSearchParams(window.location.search).get("class");
   const [classData, setClassData] = useState({
     class_id: null,
@@ -15,6 +15,8 @@ const Class = ({ teacherView }) => {
   });
   const [peopleList, setPeopleList] = useState([]);
   const [quizList, setQuizList] = useState([]);
+  const [isMember, setIsMember] = useState(false); //To verify user is a class member
+  const [loading, setLoading] = useState(true); //Prevent premature blocking of members, doesn't matter for the rest
 
   useEffect(() => {
     // call class details API
@@ -32,7 +34,6 @@ const Class = ({ teacherView }) => {
         }
       })
       .then((data) => {
-        console.log(data);
         setClassData(data);
       })
       .catch((error) => {
@@ -53,8 +54,13 @@ const Class = ({ teacherView }) => {
         }
       })
       .then((data) => {
-        console.log(data);
         setPeopleList(data);
+        if (data.filter((person) => {return person.user_id === userId}).length) {
+          setIsMember(true);
+        }
+        setLoading(false);
+      }).then(() => {
+        console.log(peopleList);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -74,7 +80,6 @@ const Class = ({ teacherView }) => {
         }
       })
       .then((data) => {
-        console.log(data);
         setQuizList(data.quizzes);
       })
       .catch((error) => {
@@ -242,6 +247,14 @@ const Class = ({ teacherView }) => {
     );
   };
 
+  if (loading) {
+    return <h2 style={{margin: "50vh auto", textAlign: "center"}}>Loading...</h2>
+  }
+
+  if (!isMember) {
+    return <h2>You are not a member of this class.</h2>
+  }
+  
   return (
     <div style={{ display: "flex" }}>
       <ClassSidebar />

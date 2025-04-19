@@ -20,6 +20,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [teacherView, setTeacherView] = useState(false);
+  const [myId, setMyId] = useState();
 
   useEffect(() => {
      //decide if we're a teacher
@@ -38,13 +39,16 @@ function App() {
         }
       })
       .then((data) => {
+        console.log(data);
         setTeacherView(data.isTeacher);
+        setMyId(data.userId);
         setLoggedIn(true);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error:", error);
         setTeacherView(false);
+        setMyId(null);
         setLoggedIn(false);
         setLoading(false);
       })
@@ -71,10 +75,10 @@ function App() {
           <Route path="/classes" element={checkLoggedIn() || <ClassOverview teacherView={teacherView} />} />
           <Route path="/joinClass" element={checkLoggedIn() || <JoinClass teacherView={teacherView} />} />
           <Route path="/createClass" element={checkLoggedIn() || <CreateClass teacherView={teacherView} />} />
-          <Route path="/class" element={checkLoggedIn() || <Class teacherView={teacherView} />} />
+          <Route path="/class" element={checkLoggedIn() || <Class userId={myId} teacherView={teacherView} />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/logout" element={<Logout />} />
+          <Route path="/logout" element={<Logout onLogout={() => {setLoggedIn(false)}}/>} />
           <Route path="/createQuiz" element={checkLoggedIn() || <CreateQuiz />} />
           <Route path="/takeQuiz" element={checkLoggedIn() || <TakeQuiz  />} />
           {/* 404 Not Found  as a catchall*/}

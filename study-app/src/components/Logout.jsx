@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const Logout = () => {
+const Logout = ({onLogout}) => {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -19,6 +19,7 @@ const Logout = () => {
         }
       })
       .then(() => {
+        onLogout();
         setMessage("You have been logged out.");
       })
       .catch((error) => {

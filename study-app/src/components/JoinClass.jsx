@@ -60,7 +60,7 @@ export default function JoinClass({teacherView}) {
       })
       .then(() => {
         if (window.confirm("You were successfully added to the class! Go there now?")) {
-          window.location.href = './class';
+          window.location.href = `./class?class=${idEntered}`;
         }
       })
       .catch((error) => {
