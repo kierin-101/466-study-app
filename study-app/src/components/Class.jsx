@@ -43,10 +43,9 @@ const mockPeople = [
   }
 ];
 
-const Class = () => {
+const Class = ({teacherView}) => {
 
   //in an effect hook (presumably, will have to retrieve class data and provide links to all user clases)
-  const [showTeacherView] = useState(true); //this will never get changed, once endpoints ready depends on if userData shows we're a teacher
   const [peopleList, setPeopleList] = useState(mockPeople.concat(mockPeople)); //change this later
   const [quizList, setQuizList] = useState(mockQuizzes.concat(mockQuizzes));
   // also will have to read the class data obviously
@@ -57,7 +56,7 @@ const Class = () => {
     return (
       <div style={{ height: "100%", width: "20vw", maxWidth: "20vw", background: "lightgrey", position: "fixed" }}>
         <h1 style={{ textAlign: "center" }}>Class Name</h1>
-        {showTeacherView && <p style={{ marginLeft: "8px" }}><b>Join Code: </b>Code</p>}
+        {teacherView && <p style={{ marginLeft: "8px" }}><b>Join Code: </b>Code</p>}
         <p style={{ marginLeft: "8px" }}><b>Subject: </b>Class Subject</p>
         <p style={{ marginLeft: "8px" }}><b>Teacher: </b>Teacher</p>
         <p style={{ marginLeft: "8px" }}><b>Points Daily: </b>Points</p> {/* would be good to show user's progress toward the cap for the day */}
@@ -74,7 +73,7 @@ const Class = () => {
           <p style={{ width: "25%" }}>Title here</p>
           <p style={{ width: "25%" }}>{personDetails.isTeacher ? "Teacher" : "Student"}</p>
         </div>
-        {(!personDetails.isTeacher && showTeacherView) && <button onClick={() => { removeMember(personDetails, index); }}>Remove User</button>}
+        {(!personDetails.isTeacher && teacherView) && <button onClick={() => { removeMember(personDetails, index); }}>Remove User</button>}
       </div>
     )
   }

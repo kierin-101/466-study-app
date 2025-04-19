@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-export default function JoinClass() {
+export default function JoinClass({teacherView}) {
   const [idEntered, setIdEntered] = useState();
   const [searchResult, setSearchResult] = useState(null);
-
-  //TODO: add some logic to restrict access to this page for teachers
 
   const findClass = (e) => {
     e.preventDefault(); // prevent refresh
@@ -71,41 +69,45 @@ export default function JoinClass() {
       });
   }
   
-  return (
-    <form
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "16px auto",
-        width: "75%",
-        gap: "16px 0px",
-        background: "lightgrey",
-        borderRadius: "16px",
-      }}
-    >
-      <h1>Join a Class</h1>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="classId">Enter the numeric class code provided by your teacher:</label>
-        <input
-          required
-          style={{textAlign:"center"}}
-          id="classId"
-          type="number"
-          min="0"
-          onChange={(e) => {
-            setIdEntered(e.target.value);
-          }}
-        ></input>
-      </div>
-      <button
-        type="button"
-        onClick={findClass}
+  if (teacherView) {
+    return <h2>Teachers cannot join classes as students. Please create a class instead.</h2>
+  } else {
+    return (
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "16px auto",
+          width: "75%",
+          gap: "16px 0px",
+          background: "lightgrey",
+          borderRadius: "16px",
+        }}
       >
-        Find Class
-      </button>
-      {searchResult}
-      <br />
-    </form>
-  );
+        <h1>Join a Class</h1>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label for="classId">Enter the numeric class code provided by your teacher:</label>
+          <input
+            required
+            style={{textAlign:"center"}}
+            id="classId"
+            type="number"
+            min="0"
+            onChange={(e) => {
+              setIdEntered(e.target.value);
+            }}
+          ></input>
+        </div>
+        <button
+          type="button"
+          onClick={findClass}
+        >
+          Find Class
+        </button>
+        {searchResult}
+        <br />
+      </form>
+    );
+  }
 };

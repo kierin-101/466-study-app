@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 
-export default function CreateClass() {
+export default function CreateClass({teacherView}) {
   const [className, setClassName] = useState('');
   const [classSubject, setClassSubject] = useState('');
   const [pointsCap, setPointsCap] = useState(100);
-
-  //todo: add some logic to restrict access to this page for students
 
   //how specific do we want to get with these
   const subjects = [
@@ -72,65 +70,69 @@ export default function CreateClass() {
       });
   }
 
-  return (
-    <form
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        margin: "16px auto",
-        width: "75%",
-        gap: "16px 0px",
-        background: "lightgrey",
-        borderRadius: "16px",
-      }}
-      onSubmit={submitClass}
-    >
-      <h1>Create a Class</h1>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="className">Class Name:</label>
-        <input
-          id="className"
-          required
-          maxLength={100}
-          onChange={(e) => {
-            setClassName(e.target.value);
-          }}
-        ></input>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="subject">Subject:</label>
-        <select
-          id="subject"
-          required
-          onChange={(e) => {
-            setClassSubject(e.target.value);
-          }}
-        >
-          <option disabled selected>Choose a Subject</option>
-          {subjects.map((subject) => {
-            return (<option>{subject}</option>)
-          })}
-        </select>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="points">Daily Points Cap:</label>
-        <input
-          id="points"
-          type="number"
-          required
-          min="100"
-          max="500"
-          value={pointsCap}
-          onChange={(e) => {
-            setPointsCap(e.target.value);
-          }}
-        ></input>
-      </div>
-      <button>
-        Create Now
-      </button>
-      <br />
-    </form>
-  );
+  if (!teacherView) {
+    return <h2>Sorry, student accounts cannot create classes. If you are a teacher, please sign up with a teacher account.</h2>
+  } else {
+    return (
+      <form
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "16px auto",
+          width: "75%",
+          gap: "16px 0px",
+          background: "lightgrey",
+          borderRadius: "16px",
+        }}
+        onSubmit={submitClass}
+      >
+        <h1>Create a Class</h1>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label for="className">Class Name:</label>
+          <input
+            id="className"
+            required
+            maxLength={100}
+            onChange={(e) => {
+              setClassName(e.target.value);
+            }}
+          ></input>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label for="subject">Subject:</label>
+          <select
+            id="subject"
+            required
+            onChange={(e) => {
+              setClassSubject(e.target.value);
+            }}
+          >
+            <option disabled selected>Choose a Subject</option>
+            {subjects.map((subject) => {
+              return (<option>{subject}</option>)
+            })}
+          </select>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <label for="points">Daily Points Cap:</label>
+          <input
+            id="points"
+            type="number"
+            required
+            min="100"
+            max="500"
+            value={pointsCap}
+            onChange={(e) => {
+              setPointsCap(e.target.value);
+            }}
+          ></input>
+        </div>
+        <button>
+          Create Now
+        </button>
+        <br />
+      </form>
+    );
+  }
 };
