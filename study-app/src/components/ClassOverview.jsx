@@ -36,7 +36,7 @@ const ClassOverview = ({teacherView}) => {
         {classList.map((c) => {
           return (
             <div>
-              <a key={`classLink${c.classId}`} className="classOverviewLink" href={`/class?${c.classId}`}>
+              <a key={`classLink${c.class_id}`} className="classOverviewLink" href={`/class?class=${c.class_id}`}>
                 <div style={{display:"flex", flexDirection: "column", alignItems: "center", textAlign: "center"}}>
                   <h1>{c.class_name}</h1>
                   <h2>{c.subject}</h2>
