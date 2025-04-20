@@ -5,6 +5,7 @@ const sql = require('mssql');
 const accountRoutes = require('./routes/accountRoutes');
 const classRoutes = require('./routes/classRoutes');
 const quizRoutes = require('./routes/quizRoutes');
+const shopRoutes = require('./routes/shopRoutes');
 const app = express();
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -47,6 +48,7 @@ app.use(
 app.use('/api/account', accountRoutes);
 app.use('/api/class', classRoutes);
 app.use('/api/quiz', quizRoutes);
+app.use('/api/shop', shopRoutes);
 
 // Start the server
 const port = process.env.PORT || 5000;
