@@ -10,7 +10,7 @@ export default function CreateQuiz() {
     {
       question: 'Untitled question', multiselect: false, options: [
         { answer: 'Answer 1', isCorrect: false, points: 0 },
-        { answer: 'Answer 2', isCorrect: true, points: 10 },
+        { answer: 'Answer 2', isCorrect: true, points: 0 },
         { answer: 'Answer 3', isCorrect: false, points: 0 },
         { answer: 'Answer 4', isCorrect: false, points: 0 }]
     },
@@ -21,7 +21,7 @@ export default function CreateQuiz() {
     setQuestionBank([...questionBank, {
       question: 'New question', multiselect: false, options: [
         { answer: 'Answer 1', isCorrect: false, points: 0 },
-        { answer: 'Answer 2', isCorrect: true, points: 10 },
+        { answer: 'Answer 2', isCorrect: true, points: 0 },
         { answer: 'Answer 3', isCorrect: false, points: 0 },
         { answer: 'Answer 4', isCorrect: false, points: 0 }]
     }]);
@@ -37,6 +37,26 @@ export default function CreateQuiz() {
       alert(`Question(s) ${questionsMissingCorrectAnswer.map((q, index) => index + 1).join(', ')} missing correct answers.`);
       return;
     }
+    // assign points to each question based on the number of correct answers
+    questionBank.forEach(question => {
+      const numCorrectAnswers = question.options.filter(option => option.isCorrect).length;
+      if (numCorrectAnswers > 0) {
+        question.options.forEach(option => {
+          if (option.isCorrect) {
+            const pointsEl = document.getElementById(`points${questionBank.indexOf(question)}`);
+            const points = pointsEl ? parseInt(pointsEl.value) : 0;
+            option.points = points / numCorrectAnswers;
+          } else {
+            option.points = 0;
+          }
+        });
+      } else {
+        question.options.forEach(option => {
+          option.points = 0;
+        });
+      }
+    });
+    setQuestionBank(() => questionBank);
     const quizData = {
       title: quizTitle,
       description: quizDescription,

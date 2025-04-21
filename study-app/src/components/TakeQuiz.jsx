@@ -84,10 +84,47 @@ export default function TakeQuiz() {
     const data = {
       quizID: quizID,
       answers: answers,
-      userAnswers: userAnswers
+      userAnswers: userAnswers,
+      correctAnswers: questionBank.map((question) => {
+        return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
+      }),
     };
     console.log('quiz data:', data);
-
+    // calculate points
+    let totalPoints = questionBank.reduce((acc, question, index) => {
+      const correctAnswers = question.options.filter((option) => option.isCorrect).map((option) => option.answer);
+      const userAnswer = userAnswers[index];
+      if (question.multiselect) {
+        // For multiselect questions, add for correct, subtract for incorrect
+        const correctPoints = question.options.reduce((acc, option) => {
+          if (option.isCorrect && userAnswer.includes(option.answer)) {
+            return acc + option.points;
+          }
+          return acc;
+        }, 0);
+        const incorrectPoints = question.options.reduce((acc, option) => {
+          if (!option.isCorrect && userAnswer.includes(option.answer)) {
+            // find a correct answer and subtract its points
+            const correctOption = question.options.find((opt) => opt.isCorrect);
+            return acc + correctOption.points;
+          }
+          return acc;
+        }, 0);
+        // don't allow negative points
+        const adjustedPoints = Math.max(0, correctPoints - incorrectPoints);
+        return acc + adjustedPoints;
+      } else {
+        // For single select questions, check if the selected answer is correct
+        const isCorrect = correctAnswers[0] === userAnswer[0];
+        return acc + (isCorrect ? question.options.find((option) => option.answer === userAnswer[0]).points : 0);
+      }
+    }, 0);
+    console.log('Total points:', totalPoints);
+    console.log('Possible points:', questionBank.reduce((acc, question) => {
+      return acc + question.options.reduce((acc, option) => {
+        return acc + option.points;
+      }, 0);
+    }, 0));
     // highlight correct answers
     const correctAnswers = questionBank.map((question) => {
       return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
@@ -95,7 +132,6 @@ export default function TakeQuiz() {
 
     document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((input) => {
       const questionIndex = parseInt(input.name.split('-')[1]);
-      const answerIndex = questionBank[questionIndex].options.findIndex((option) => option.answer === input.value);
       if (questionBank[questionIndex].multiselect) {
         if (correctAnswers[questionIndex].includes(input.value)) {
           input.parentElement.style.color = 'green';
