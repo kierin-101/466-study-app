@@ -2,16 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 export default function TakeQuiz() {
   // const [quizId, setQuizId] = useState('12345');
-  const [quizTitle, setQuizTitle] = useState('Super Hard Quiz');
-  const [quizDescription, setQuizDescription] = useState('This is the description.');
-  const [releaseDate, setReleaseDate] = useState('2023-10-01 10:00 AM');
-  const [dueDate, setDueDate] = useState('2023-10-15 10:00 PM');
+  const [quizTitle, setQuizTitle] = useState('Quiz loading...');
+  const [quizDescription, setQuizDescription] = useState('');
+  const [releaseDate, setReleaseDate] = useState('');
+  const [dueDate, setDueDate] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [questionBank, setQuestionBank] = useState([]);
 
-  const [userAnswers, setUserAnswers] = useState(
-    Array(questionBank.length).fill([])
-  );
+  const [userAnswers, setUserAnswers] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,6 +30,20 @@ export default function TakeQuiz() {
           setQuizDescription(data.description);
           setReleaseDate(new Date(data.release_timestamp).toString());
           setDueDate(new Date(data.due_timestamp).toString());
+          const questions = data.questions.map((question) => {
+            return {
+              question: question.question_text,
+              options: question.answers.map((option) => ({
+                answer: option.answer_text,
+                isCorrect: option.is_correct,
+                points: option.points_rewarded,
+              })),
+              multiselect: question.multiple_select,
+            };
+          }
+          );
+          setQuestionBank(questions);
+          setUserAnswers(Array(questions.length).fill([])); // Initialize user answers
         })
         .catch((error) => console.error('Error fetching quiz:', error));
     };
@@ -39,22 +51,22 @@ export default function TakeQuiz() {
   }, []);
 
   function handleAnswerChange(questionIndex, answerIndex) {
-    const updatedAnswers = [...userAnswers];
     const question = questionBank[questionIndex];
-    const answer = question.options[answerIndex].answer;
-    const isSelected = updatedAnswers[questionIndex].includes(answer);
+    const selectedAnswer = question.options[answerIndex].answer;
+    let updatedAnswers = [...userAnswers];
 
-    // If the question is multiselect, toggle the answer
     if (question.multiselect) {
-      if (isSelected) {
+      // Toggle the answer for multiselect questions
+      if (updatedAnswers[questionIndex].includes(selectedAnswer)) {
         updatedAnswers[questionIndex] = updatedAnswers[questionIndex].filter(
-          (ans) => ans !== answer
+          (answer) => answer !== selectedAnswer
         );
       } else {
-        updatedAnswers[questionIndex].push(answer);
+        updatedAnswers[questionIndex].push(selectedAnswer);
       }
     } else {
-      updatedAnswers[questionIndex] = [answer];
+      // For single select questions, just set the answer
+      updatedAnswers[questionIndex] = [selectedAnswer];
     }
     setUserAnswers(updatedAnswers);
   }
@@ -62,50 +74,45 @@ export default function TakeQuiz() {
   function handleSubmit(e) {
     e.preventDefault();
     // Logic to submit the quiz
-    // check correctness of answers
-    const totalPointsPossible = questionBank.reduce((acc, question) => acc + question.points, 0);
-    let pointsEarned = 0;
-    const results = questionBank.map((question, index) => {
-      const correctAnswers = question.options
-        .filter(option => option.isCorrect)
-        .map(option => option.answer);
+    const quizID = new URLSearchParams(window.location.search).get('quiz');
+    const answers = userAnswers.map((userAnswer, index) => {
+      return {
+        question: questionBank[index].question,
+        selectedAnswers: userAnswer,
+      };
+    });
+    const data = {
+      quizID: quizID,
+      answers: answers,
+      userAnswers: userAnswers
+    };
+    console.log('quiz data:', data);
 
-      const userAnswer = userAnswers[index];
-      let userIsCorrect = false;
-      let pointsEarnedThisQuestion = 0;
+    // highlight correct answers
+    const correctAnswers = questionBank.map((question) => {
+      return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
+    });
 
-      if (question.multiselect) {
-        const correctCount = correctAnswers.filter(answer => userAnswer.includes(answer)).length;
-        const incorrectCount = userAnswer.filter(answer => !correctAnswers.includes(answer)).length;
-        pointsEarnedThisQuestion = (correctCount - incorrectCount) * (question.points / correctAnswers.length);
-        pointsEarned += pointsEarnedThisQuestion;
-        userIsCorrect = correctCount === correctAnswers.length && incorrectCount === 0;
-      } else {
-        userIsCorrect = userAnswer[0] === correctAnswers[0];
-        pointsEarnedThisQuestion = userIsCorrect ? question.points : 0
-        pointsEarned += pointsEarnedThisQuestion;
-      }
-
-      document.querySelectorAll(`input[name="question-${index}"]`).forEach((input, i) => {
-        if (question.options[i].isCorrect) {
+    document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((input) => {
+      const questionIndex = parseInt(input.name.split('-')[1]);
+      const answerIndex = questionBank[questionIndex].options.findIndex((option) => option.answer === input.value);
+      if (questionBank[questionIndex].multiselect) {
+        if (correctAnswers[questionIndex].includes(input.value)) {
           input.parentElement.style.color = 'green';
         } else {
           input.parentElement.style.color = 'red';
         }
-      });
-
-      return {
-        question: question.question,
-        userAnswer,
-        correctAnswers,
-        userIsCorrect,
-        pointsPossible: question.points,
-        pointsEarned: pointsEarnedThisQuestion
-      };
+      } else {
+        if (correctAnswers[questionIndex][0] === input.value) {
+          input.parentElement.style.color = 'green';
+        } else {
+          input.parentElement.style.color = 'red';
+        }
+      }
     });
-    // Display the results
-    alert(`You earned ${pointsEarned} out of ${totalPointsPossible} points!`);
-    console.log('Quiz submitted:', results);
+
+    // highlight correct answers
+
   }
 
   return (
@@ -132,19 +139,20 @@ export default function TakeQuiz() {
         <p>Due Date: {dueDate}</p>
         <p>Current Time: {currentTime.toLocaleString()}</p>
         <div id="questionBank">
-          {questionBank.map((question, questionIndex) => (
-            <div key={questionIndex}>
+          {questionBank.map((question, index) => (
+            <div key={index}>
               <h3>{question.question}</h3>
-              {question.options.map((option, optionIndex) => (
-                <div key={optionIndex}>
+              {question.options.map((option, i) => (
+                <div>
                   <input
-                    type={question.multiselect ? "checkbox" : "radio"}
-                    name={`question-${questionIndex}`}
+                    type={question.multiselect ? 'checkbox' : 'radio'}
+                    name={`question-${index}`}
                     value={option.answer}
-                    checked={userAnswers[questionIndex].includes(option.answer)}
-                    onChange={() => handleAnswerChange(questionIndex, optionIndex)}
+                    onChange={() => handleAnswerChange(index, i)}
                   />
-                  {option.answer}
+                  <label key={i}>
+                    {option.answer}
+                  </label>
                 </div>
               ))}
             </div>
