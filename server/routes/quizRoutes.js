@@ -82,16 +82,37 @@ router.get('/:quiz_id', async (req, res) => {
   try {
     const pool = await getPool(config);
 
-    const result = await pool.request()
+    const quizResult = await pool.request()
     .input('quiz_id', sql.Int, quizId)
     .query('SELECT quiz_id, title, description, release_timestamp, due_timestamp, target_score, class_id FROM Quizzes WHERE quiz_id = @quiz_id');
 
-    if (result.recordset.length === 0) {
+    if (quizResult.recordset.length === 0) {
       return res.status(404).json({ message: 'Quiz not found' });
     }
+    const quiz = quizResult.recordset[0];
 
-    res.json(result.recordset[0]);
-  } catch {
+    const questionsResult = await pool.request()
+    .input('quiz_id', sql.Int, quizId)
+    .query(`SELECT * FROM Questions WHERE quiz_id = @quiz_id`);
+
+    if (questionsResult.recordset.length === 0) {
+      return res.status(404).json({ message: `Quiz with ID ${quizId} has no questions` });
+    }
+    quiz.questions = questionsResult.recordset;
+
+    for (const question of quiz.questions) {
+      const answersResult = await pool.request()
+      .input('question_id', sql.Int, question.question_id)
+      .query(`SELECT * FROM Answers WHERE question_id = @question_id`);
+
+      if (answersResult.recordset.length === 0) {
+        return res.status(404).json({ message: `Question with ID ${question.question_id} has no answers` });
+      }
+      question.answers = answersResult.recordset;
+    }
+
+    res.json(quiz);
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching quiz info' });
   }
