@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import AvatarDisplay from "./AvatarDisplay";
 
-//TODOs: verify someone is a member of the class they're trying to access before loading details,
-//and read the active rewards data for people display (come back to this once shop routes are live)
-
 const Class = ({ userId, teacherView }) => {
   const classId = new URLSearchParams(window.location.search).get("class");
   const [classData, setClassData] = useState({
@@ -59,8 +56,6 @@ const Class = ({ userId, teacherView }) => {
           setIsMember(true);
         }
         setLoading(false);
-      }).then(() => {
-        console.log(peopleList);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -119,6 +114,10 @@ const Class = ({ userId, teacherView }) => {
   };
 
   const displayPerson = (personDetails, index) => {
+    const avatar = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 1})[0]?.reward_name;
+    const title = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 2})[0]?.reward_name;
+    const theme = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 3})[0]?.reward_name;
+
     return (
       <div
         key={`person${personDetails.user_id}`}
@@ -143,9 +142,9 @@ const Class = ({ userId, teacherView }) => {
             gap: "16px",
           }}
         >
-          <AvatarDisplay dimension="64px" avatarName="test" borderName="test" />
+          <AvatarDisplay dimension="64px" avatarName={avatar} borderName={theme} />
           <h3 style={{ width: "25%" }}>{personDetails.username}</h3>
-          <p style={{ width: "25%" }}>Title here</p>
+          <p style={{ width: "25%" }}>{title}</p>
           <p style={{ width: "25%" }}>
             {personDetails.is_teacher ? "Teacher" : "Student"}
           </p>
@@ -187,7 +186,6 @@ const Class = ({ userId, teacherView }) => {
           }
         })
         .then((data) => {
-          console.log(data);
           const updatedPeople = [...peopleList];
           updatedPeople.splice(index, 1);
           setPeopleList(updatedPeople);

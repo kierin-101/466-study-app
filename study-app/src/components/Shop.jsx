@@ -2,121 +2,45 @@ import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import AvatarDisplay from "./AvatarDisplay";
 
-
-const mockRewards = [
-  {
-    rewardName: "Inchworm Avatar",
-    rewardTypeId: 1,
-    description: "An avatar for all users.",
-    pointsCost: 0,
-    isOwned: true,
-    isActive: true
-  },
-  {
-    rewardName: "Axolotl Avatar",
-    rewardTypeId: 1,
-    description: "An excellent use of Katelyn's time.",
-    pointsCost: 200,
-    isOwned: true,
-    isActive: false
-  },
-  {
-    rewardName: "Aspiring Academic",
-    rewardTypeId: 2,
-    description: "A title for new studiers.",
-    pointsCost: 0,
-    isOwned: true,
-    isActive: true
-  },
-  {
-    rewardName: "Cat Avatar",
-    rewardTypeId: 1,
-    description: "Another excellent use of Katelyn's time.",
-    pointsCost: 100,
-    isOwned: false,
-    isActive: false
-  },
-  {
-    rewardName: "110%",
-    rewardTypeId: 2,
-    description: "Giving it 110% what can I say",
-    pointsCost: 110,
-    isOwned: true,
-    isActive: false
-  },
-  {
-    rewardName: "Collector of Knowledge",
-    rewardTypeId: 2,
-    description: "For students with a truly impressive number of points.",
-    pointsCost: 500,
-    isOwned: false,
-    isActive: false
-  },
-  {
-    rewardName: "Cactus Theme",
-    rewardTypeId: 3,
-    description: "It's cacti.",
-    pointsCost: 300,
-    isOwned: false,
-    isActive: false
-  },
-  {
-    rewardName: "Quality Quizzer",
-    rewardTypeId: 2,
-    description: "when the quizzes are quality",
-    pointsCost: 200,
-    isOwned: true,
-    isActive: true
-  },
-  {
-    rewardName: "Books Theme",
-    rewardTypeId: 3,
-    description: "Roughly drawn books.",
-    pointsCost: 100,
-    isOwned: false,
-    isActive: false
-  },
-]
-
 const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
 
-  const canAfford = displayedPoints >= itemDetails.pointsCost;
+  const canAfford = displayedPoints >= itemDetails.point_cost;
 
-  if (itemDetails.rewardTypeId === 1) {
+  if (itemDetails.reward_type_id === 1) {
     return (
-      <div key={`reward${itemDetails.rewardName}`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
-        <h3>{itemDetails.rewardName}</h3>
-        <AvatarDisplay dimension="10vw" avatarName={itemDetails.rewardName} borderName={null}/>
+      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+        <h3>{itemDetails.reward_name}</h3>
+        <AvatarDisplay dimension="10vw" avatarName={itemDetails.reward_name} borderName={null}/>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
-        {!itemDetails.isOwned ? 
-          ( <><p><b>Price: </b>{itemDetails.pointsCost}</p>
+        {!itemDetails.acquisition_date ? 
+          ( <><p><b>Price: </b>{itemDetails.point_cost}</p>
             <button onClick={onPurchase} disabled={!canAfford}>Buy</button></>)
-          : (<button onClick={onEquip} disabled={itemDetails.isActive}>Equip</button>)
+          : (<button onClick={onEquip} disabled={itemDetails.active}>Equip</button>)
         }
       </div>
     )
-  } else if (itemDetails.rewardTypeId === 2) {
+  } else if (itemDetails.reward_type_id === 2) {
     return (
-      <div key={`reward${itemDetails.rewardName}`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
-        <h3>{itemDetails.rewardName}</h3>
+      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+        <h3>{itemDetails.reward_name}</h3>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
-        {!itemDetails.isOwned ? 
-          ( <><p><b>Price: </b>{itemDetails.pointsCost}</p>
+        {!itemDetails.acquisition_date ? 
+          ( <><p><b>Price: </b>{itemDetails.point_cost}</p>
             <button onClick={onPurchase} disabled={!canAfford}>Buy</button></>)
-          : (<button onClick={onEquip} disabled={itemDetails.isActive}>Equip</button>)
+          : (<button onClick={onEquip} disabled={itemDetails.active}>Equip</button>)
         }
       </div>
     )
-  } else if (itemDetails.rewardTypeId === 3) {
+  } else if (itemDetails.reward_type_id === 3) {
     return (
-      <div key={`reward${itemDetails.rewardName}`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
-        <h3>{itemDetails.rewardName}</h3>
-        <AvatarDisplay dimension="7vw" avatarName={null} borderName={itemDetails.rewardName}/>
+      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+        <h3>{itemDetails.reward_name}</h3>
+        <AvatarDisplay dimension="7vw" avatarName={null} borderName={itemDetails.reward_name}/>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
-        {!itemDetails.isOwned ? 
-          ( <><p><b>Price: </b>{itemDetails.pointsCost}</p>
+        {!itemDetails.acquisition_date ? 
+          ( <><p><b>Price: </b>{itemDetails.point_cost}</p>
             <button onClick={onPurchase} disabled={!canAfford}>Buy</button></>)
-          : (<button onClick={onEquip} disabled={itemDetails.isActive}>Equip</button>)
+          : (<button onClick={onEquip} disabled={itemDetails.active}>Equip</button>)
         }
       </div>
     )
@@ -125,37 +49,101 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
   
 }
 
-const Shop = () => {
+const Shop = ({username, points}) => {
 
   //in an effect hook (presumably), retrieve reward data including user rewards: items active and owned should still appear but not be buyable
-  const [rewardsData, setRewardsData] = useState(mockRewards);
-  const [refreshData, setRefreshData] = useState(false); //not needed yet but probably will be for db refetching purposes
-  const [previewAvatar, setPreviewAvatar] = useState("Inchworm Avatar");
-  const [previewTitle, setPreviewTitle] = useState("Aspiring Academic");
+  const [rewardsData, setRewardsData] = useState([]);
+  const [previewAvatar, setPreviewAvatar] = useState();
+  const [previewTitle, setPreviewTitle] = useState();
   const [previewTheme, setPreviewTheme] = useState();
-  const [displayedPoints, setDisplayedPoints] = useState(200);
+  const [displayedPoints, setDisplayedPoints] = useState(points);
+  const [refresh, setRefresh] = useState(0);
 
-  // useEffect(() => {
-  //   //actual db stuff
-  //   if (refreshData) {
-  //     setRewardsData(mockRewards);
-  //     setRefreshData(false);
-  //   }
-  // }, [refreshData]);
+  useEffect(() => {
+    // call reward retrieval API
+    fetch(`http://localhost:5000/api/shop/rewards`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve reward data");
+        }
+      })
+      .then((data) => {
+        setRewardsData(data);
+        setPreviewAvatar((data.filter((reward) => {return reward.active && reward.reward_type_id === 1}))[0]?.reward_name);
+        setPreviewTitle((data.filter((reward) => {return reward.active && reward.reward_type_id === 2}))[0]?.reward_name);
+        setPreviewTheme((data.filter((reward) => {return reward.active && reward.reward_type_id === 3}))[0]?.reward_name);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, [refresh]);
 
   const handleEquip = (itemDetails) => {
-    //for mocking purposes
-    mockRewards.forEach((reward) => {if (reward.rewardTypeId === itemDetails.rewardTypeId) {reward.isActive = false}});
-    itemDetails.isActive = true;
-    //setRefreshData(true);
+    const userItem = {
+      user_reward_id: itemDetails.user_reward_id
+    }
+    // call item activation API
+    fetch("http://localhost:5000/api/shop/activate", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userItem),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Reward activation failed.");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        setRefresh(refresh+1);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Failed to equip the selected reward. Please try again.");
+      });
   }
 
   const handlePurchase = (itemDetails) => {
-    if (window.confirm(`Are you sure you want to purchase ${itemDetails.rewardName} for ${itemDetails.pointsCost} points?`)) {
-      //for mocking purposes
-      itemDetails.isOwned = true;
-      setDisplayedPoints(displayedPoints - itemDetails.pointsCost);
-      //setRefreshData(true);
+    if (window.confirm(`Are you sure you want to purchase ${itemDetails.reward_name} for ${itemDetails.point_cost} points?`)) {
+      // call item purchase API
+    const rewardInfo = {
+      reward_id: itemDetails.reward_id
+    }
+    fetch("http://localhost:5000/api/shop/purchase", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(rewardInfo),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Reward purchase failed.");
+        }
+      })
+      .then(() => {
+        setRefresh(refresh+1);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("Failed to purchase the selected reward. Please refresh the page and try again.");
+      });
     }
   }
 
@@ -165,7 +153,7 @@ const Shop = () => {
         <div style={{height: "100%", width: "30vw", maxWidth: "30vw", background: "lightgrey", position: "fixed"}}>
           <h1 style={{textAlign: "center"}}>Rewards Shop</h1>
           <AvatarDisplay dimension="20vw" avatarName={previewAvatar} borderName={previewTheme} />
-          <h1 style={{textAlign: "center"}}>Username</h1>
+          <h1 style={{textAlign: "center"}}>{username}</h1>
           <h2 style={{textAlign: "center"}}>{previewTitle}</h2>
           <p style={{textAlign: "center"}}><b>Points: </b>{displayedPoints}</p>
         </div>
@@ -185,25 +173,25 @@ const Shop = () => {
         <TabPanel>
           <h2 style={{marginLeft: "16px"}}>Avatars</h2>
           <div className="wrappingSquareList">
-            {rewardsData.filter((reward) => {return reward.rewardTypeId === 1})
+            {rewardsData.filter((reward) => {return reward.reward_type_id === 1})
               .map((reward) => 
-              {return <ShopItem itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward); setPreviewAvatar(reward.rewardName)}} onPurchase={() => {handlePurchase(reward)}} />})}
+              {return <ShopItem key={`shopDisplay${reward.reward_name}`}  itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward)}} onPurchase={() => {handlePurchase(reward)}} />})}
           </div>
         </TabPanel>
         <TabPanel className="shopTab">
           <h2 style={{marginLeft: "16px"}}>Titles</h2>
           <div className="wrappingSquareList">
-            {rewardsData.filter((reward) => {return reward.rewardTypeId === 2})
+            {rewardsData.filter((reward) => {return reward.reward_type_id === 2})
               .map((reward) => 
-              {return <ShopItem itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward); setPreviewTitle(reward.rewardName);}} onPurchase={() => {handlePurchase(reward)}} />})}
+              {return <ShopItem key={`shopDisplay${reward.reward_name}`} itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward)}} onPurchase={() => {handlePurchase(reward)}} />})}
           </div>
         </TabPanel>
         <TabPanel className="shopTab">
           <h2 style={{marginLeft: "16px"}}>Themes</h2>
           <div className="wrappingSquareList">
-            {rewardsData.filter((reward) => {return reward.rewardTypeId === 3})
+            {rewardsData.filter((reward) => {return reward.reward_type_id === 3})
               .map((reward) => 
-              {return <ShopItem itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward); setPreviewTheme(reward.rewardName);}} onPurchase={() => {handlePurchase(reward)}} />})}
+              {return <ShopItem key={`shopDisplay${reward.reward_name}`} itemDetails={reward} displayedPoints={displayedPoints} onEquip={() => {handleEquip(reward)}} onPurchase={() => {handlePurchase(reward)}} />})}
           </div>
         </TabPanel>
       </Tabs>

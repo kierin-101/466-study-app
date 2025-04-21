@@ -158,7 +158,7 @@ router.get('/:class_id/members', async (req, res) => {
     .input('class_id', sql.Int, classId)
     .query(`
       SELECT u.user_id, u.username, u.is_teacher, u.points,
-          r.reward_id, r.reward_name, r.description, r.point_cost
+          r.reward_id, r.reward_name, r.reward_type_id, r.description, r.point_cost
         FROM UserClasses uc
         JOIN Users u ON uc.user_id = u.user_id
         LEFT JOIN UserRewards ur ON u.user_id = ur.user_id AND ur.active = 1
@@ -184,6 +184,7 @@ router.get('/:class_id/members', async (req, res) => {
           members[uid].active_rewards.push({
             reward_id: row.reward_id,
             reward_name: row.reward_name,
+            reward_type_id: row.reward_type_id,
             description: row.description,
             point_cost: row.point_cost
           });

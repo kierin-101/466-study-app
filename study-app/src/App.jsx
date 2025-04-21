@@ -21,9 +21,11 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [teacherView, setTeacherView] = useState(false);
   const [myId, setMyId] = useState();
+  const [myUsername, setMyUsername] = useState();
+  const [myPoints, setMyPoints] = useState();
 
   useEffect(() => {
-     //decide if we're a teacher
+     //set user states
      fetch("http://localhost:5000/api/account/me", {
       method: "GET",
       credentials: "include",
@@ -42,6 +44,8 @@ function App() {
         console.log(data);
         setTeacherView(data.isTeacher);
         setMyId(data.userId);
+        setMyUsername(data.username);
+        setMyPoints(data.points);
         setLoggedIn(true);
         setLoading(false);
       })
@@ -49,6 +53,8 @@ function App() {
         console.error("Error:", error);
         setTeacherView(false);
         setMyId(null);
+        setMyUsername(null);
+        setMyPoints(0);
         setLoggedIn(false);
         setLoading(false);
       })
@@ -71,7 +77,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/quizzes" element={<h2>Quizzes</h2>} />
-          <Route path="/shop" element={checkLoggedIn() || <Shop />} />
+          <Route path="/shop" element={checkLoggedIn() || <Shop username={myUsername} points={myPoints} />} />
           <Route path="/classes" element={checkLoggedIn() || <ClassOverview teacherView={teacherView} />} />
           <Route path="/joinClass" element={checkLoggedIn() || <JoinClass teacherView={teacherView} />} />
           <Route path="/createClass" element={checkLoggedIn() || <CreateClass teacherView={teacherView} />} />
