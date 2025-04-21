@@ -7,50 +7,7 @@ export default function TakeQuiz() {
   const [releaseDate, setReleaseDate] = useState('2023-10-01 10:00 AM');
   const [dueDate, setDueDate] = useState('2023-10-15 10:00 PM');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [questionBank, setQuestionBank] = useState([
-    {
-      question: 'Who is the best group for 466?',
-      multiselect: false,
-      options: [
-        { answer: 'Us', isCorrect: true },
-        { answer: 'Them', isCorrect: false },
-      ],
-      points: 10
-    },
-    {
-      question: 'What is the best programming language?',
-      multiselect: false,
-      options: [
-        { answer: 'Brainf*ck', isCorrect: true },
-        { answer: 'Java', isCorrect: false },
-        { answer: 'C++', isCorrect: false },
-        { answer: 'JavaScript', isCorrect: false }
-      ],
-      points: 10
-    },
-    {
-      question: 'Select all prime numbers:',
-      multiselect: true,
-      options: [
-        { answer: '2', isCorrect: true },
-        { answer: '3', isCorrect: true },
-        { answer: '4', isCorrect: false },
-        { answer: '5', isCorrect: true }
-      ],
-      points: 30
-    },
-    {
-      question: "Who \"teaches\" this course?",
-      multiselect: false,
-      options: [
-        { answer: 'Bagheri', isCorrect: true },
-        { answer: 'Yao', isCorrect: false },
-        { answer: 'Bohn', isCorrect: false },
-        { answer: 'Tran', isCorrect: false }
-      ],
-      points: 5
-    }
-  ]);
+  const [questionBank, setQuestionBank] = useState([]);
 
   const [userAnswers, setUserAnswers] = useState(
     Array(questionBank.length).fill([])
@@ -61,6 +18,24 @@ export default function TakeQuiz() {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // fetch quiz questions from the server
+    const fetchQuestions = async () => {
+      const quizID = new URLSearchParams(window.location.search).get('quiz');
+      // general quiz data
+      fetch('http://localhost:5000/api/quiz/' + quizID)
+        .then((response) => response.json())
+        .then((data) => {
+          setQuizTitle(data.title);
+          setQuizDescription(data.description);
+          setReleaseDate(new Date(data.release_timestamp).toString());
+          setDueDate(new Date(data.due_timestamp).toString());
+        })
+        .catch((error) => console.error('Error fetching quiz:', error));
+    };
+    fetchQuestions();
   }, []);
 
   function handleAnswerChange(questionIndex, answerIndex) {
