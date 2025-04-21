@@ -49,14 +49,13 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
   
 }
 
-const Shop = ({username, points}) => {
+const Shop = ({username}) => {
 
-  //in an effect hook (presumably), retrieve reward data including user rewards: items active and owned should still appear but not be buyable
   const [rewardsData, setRewardsData] = useState([]);
   const [previewAvatar, setPreviewAvatar] = useState();
   const [previewTitle, setPreviewTitle] = useState();
   const [previewTheme, setPreviewTheme] = useState();
-  const [displayedPoints, setDisplayedPoints] = useState(points);
+  const [displayedPoints, setDisplayedPoints] = useState();
   const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
@@ -84,6 +83,28 @@ const Shop = ({username, points}) => {
       .catch((error) => {
         console.error("Error:", error);
       });
+    //get user details
+     fetch("http://localhost:5000/api/shop/points", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to retrieve user data.");
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        setDisplayedPoints(data.points);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      })
   }, [refresh]);
 
   const handleEquip = (itemDetails) => {

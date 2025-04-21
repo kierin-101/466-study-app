@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
 
 // Route to handle user login
 router.post('/login', async (req, res) => {
-  const { username, password, is_teacher, points } = req.body;
+  const { username, password, is_teacher } = req.body;
   const config = req.config;
 
   if (!username || !password) {
@@ -84,7 +84,6 @@ router.post('/login', async (req, res) => {
     req.session.userId = user.user_id;
     req.session.username = user.username;
     req.session.isTeacher = user.is_teacher;
-    req.session.points = user.points;
     
     res.json({ message: 'Login successful' });
   } catch (err) {
@@ -100,8 +99,8 @@ router.get('/me', (req, res) => {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
-  const { userId, username, isTeacher, points } = req.session;
-  res.json({ userId, username, isTeacher, points });
+  const { userId, username, isTeacher } = req.session;
+  res.json({ userId, username, isTeacher });
 });
 
 // Logout route

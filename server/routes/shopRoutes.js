@@ -39,6 +39,31 @@ router.get('/rewards', async (req, res) => {
   }
 });
 
+// Route to retrieve points for the user
+router.get('/points', async (req, res) => {
+  const config = req.config;
+  const userId = req.session?.userId;
+
+  if (!userId) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+
+  try {
+    const pool = await getPool(config);
+    const result = await pool.request()
+      .input('user_id', sql.Int, userId)
+      .query(`
+        SELECT points FROM Users where user_id = @user_id
+      `);
+
+    console.log('User points fetched:', result.recordset[0]);
+    res.json(result.recordset[0]);
+  } catch (err) {
+    console.error('Error fetching user points:', err);
+    res.status(500).json({ message: 'Error fetching user points' });
+  }
+});
+
 // Route to purchase a reward
 // Check if the user has enough points and if they already own the reward
 // If they do not own it, insert into UserRewards and PointsHistory

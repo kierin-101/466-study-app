@@ -20,9 +20,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [teacherView, setTeacherView] = useState(false);
-  const [myId, setMyId] = useState();
   const [myUsername, setMyUsername] = useState();
-  const [myPoints, setMyPoints] = useState();
+  const [myId, setMyId] = useState();
 
   useEffect(() => {
      //set user states
@@ -43,18 +42,16 @@ function App() {
       .then((data) => {
         console.log(data);
         setTeacherView(data.isTeacher);
-        setMyId(data.userId);
         setMyUsername(data.username);
-        setMyPoints(data.points);
+        setMyId(data.userId);
         setLoggedIn(true);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error:", error);
         setTeacherView(false);
-        setMyId(null);
         setMyUsername(null);
-        setMyPoints(0);
+        setMyId(null);
         setLoggedIn(false);
         setLoading(false);
       })
@@ -77,7 +74,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/quizzes" element={<h2>Quizzes</h2>} />
-          <Route path="/shop" element={checkLoggedIn() || <Shop username={myUsername} points={myPoints} />} />
+          <Route path="/shop" element={checkLoggedIn() || <Shop username={myUsername}/>} />
           <Route path="/classes" element={checkLoggedIn() || <ClassOverview teacherView={teacherView} />} />
           <Route path="/joinClass" element={checkLoggedIn() || <JoinClass teacherView={teacherView} />} />
           <Route path="/createClass" element={checkLoggedIn() || <CreateClass teacherView={teacherView} />} />
