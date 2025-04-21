@@ -30,12 +30,36 @@ const SignUp = () => {
       })
       .then((data) => {
         console.log(data);
-        // redirect to home page or show success message
-        // window.location.href = "/home";
+        alert("Registered successfully!");
+        //The user has been successfully registered and will be logged in automatically:
+        fetch("http://localhost:5000/api/account/login", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error("Login failed.");
+            }
+          })
+          .then((data) => {
+            console.log(data);
+            window.location.href = "/";
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Your account was registered, but there was an issue logging in. Please try again.");
+            window.location.href = "/login";
+          });
       })
       .catch((error) => {
         console.error("Error:", error);
-        // alert("Registration failed. Please try again.");
+        alert("Registration failed. Please try again.");
       });
   }
 
