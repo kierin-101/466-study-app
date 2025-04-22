@@ -1,4 +1,4 @@
-const NavBar = ({loggedIn}) => {
+const NavBar = ({ loggedIn }) => {
   return (
     <nav style={{ position: 'sticky', top: 0, left: 0, right: 0 }}>
       <style>
@@ -11,7 +11,7 @@ const NavBar = ({loggedIn}) => {
           .nav-item:hover {
             color: blue;
           }
-          ul {
+          .navBar {
             display: flex;
             list-style-type: none;
             padding: 0;
@@ -20,26 +20,26 @@ const NavBar = ({loggedIn}) => {
             justify-content: space-around;
             width: 100%;
           }
-          li:hover {
+          .navOuterItem:hover {
             background-color: #ddd;
             border-radius: 5px;
           }
-          li a {
+          .navOuterItem a {
             padding: 10px;
             display: block;
           }
-          li a:hover {
+          .navOuterItem a:hover {
             background-color: #ddd;
             border-radius: 5px;
           }
         `}
       </style>
-      <ul>
-        <li><a href="/" className="nav-item">Home</a></li>
-        {loggedIn && <li><a href="/shop" className="nav-item">Shop</a></li>}
-        {loggedIn && <li><a href="/classes" className="nav-item">Classes</a></li>}
-        {!loggedIn && <li><a href="/login" className="nav-item">Login</a></li>}
-        {loggedIn && <li><a href="/logout" className="nav-item">Logout</a></li>}
+      <ul className="navBar">
+        <li className="navOuterItem"><a href="/" className="nav-item">Home</a></li>
+        {loggedIn && <li className="navOuterItem"><a href="/shop" className="nav-item">Shop</a></li>}
+        {loggedIn && <li className="navOuterItem"><a href="/classes" className="nav-item">Classes</a></li>}
+        {!loggedIn && <li className="navOuterItem"><a href="/login" className="nav-item">Login</a></li>}
+        {loggedIn && <li className="navOuterItem"><a href="/logout" className="nav-item">Logout</a></li>}
       </ul>
     </nav>
   )
