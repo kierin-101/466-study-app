@@ -118,5 +118,44 @@ router.get('/:quiz_id', async (req, res) => {
   }
 });
 
+// Route to store user answers to quiz
+
+router.post('/user-answers', async(req, res) => {
+  const { attempt, answers } = req.body;
+  const config = req.config;
+  const user_id = req.session?.userId
+  console.log(user_id);
+
+  if (!attempt || !Array.isArray(answers)) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const pool = await getPool(config);
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
+
+    for (const ans of answers) {
+      const request = new sql.Request(transaction);
+      await request
+        .input('user_id', sql.Int, user_id)
+        .input('attempt', sql.Int, attempt)
+        .input('answer_id', sql.Int, ans.answer_id)
+        .query(`
+          INSERT INTO UserAnswers (user_id, attempt, answer_id)
+          VALUES (@user_id, @attempt, @answer_id)
+          `);
+    }
+
+    await transaction.commit();
+    res.status(201).json({ message: 'User answers saved successfully' });
+  } catch (err) {
+    console.error('Error saving answers:', err);
+    res.status(500).json({ error: 'Failed to save answers' });
+  }
+
+});
+
 module.exports = router;
 

@@ -46,3 +46,16 @@ GET http://localhost:5000/api/class/1/members
 
 ### GET class overview for logged-in user
 GET http://localhost:5000/api/class/overview
+
+### POST submit quiz answers
+POST http://localhost:5000/api/quiz/user-answers
+Content-Type: application/json
+
+{
+  "attempt": 1,
+  "answers": [
+    { "answer_id": 1 },
+    { "answer_id": 2 },
+    { "answer_id": 3 }
+  ]
+}
