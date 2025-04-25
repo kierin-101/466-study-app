@@ -14,8 +14,8 @@ POST http://localhost:5000/api/account/login
 Content-Type: application/json
 
 {
-  "username": "testuser",
-  "password": "test123"
+  "username": "adam1",
+  "password": "adam123"
 }
 
 
@@ -58,4 +58,15 @@ Content-Type: application/json
     { "answer_id": 2 },
     { "answer_id": 3 }
   ]
+}
+
+### POST award points
+
+POST http://localhost:5000/api/quiz/award-points
+Content-Type: application/json
+
+{
+  "points_delta": 3,
+  "description": "Completed Sample Quiz",
+  "quiz_id": 2
 }
