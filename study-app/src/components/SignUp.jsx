@@ -25,7 +25,7 @@ const SignUp = () => {
         if (response.ok) {
           return response.json();
         } else {
-          throw new Error("Failed to register user");
+          return response.json().then((data) => {throw new Error(data.message)});
         }
       })
       .then((data) => {
@@ -44,7 +44,7 @@ const SignUp = () => {
             if (response.ok) {
               return response.json();
             } else {
-              throw new Error("Login failed.");
+              return response.json().then((data) => {throw new Error(data.message)});
             }
           })
           .then((data) => {
@@ -59,7 +59,7 @@ const SignUp = () => {
       })
       .catch((error) => {
         console.error("Error:", error);
-        alert("Registration failed. Please try again.");
+        alert(`Registration failed: ${error}`);
       });
   }
 

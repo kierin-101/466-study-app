@@ -19,7 +19,8 @@ export default function CreateClass({teacherView}) {
     "Computer Science",
     "Health",
     "Psychology",
-    "Language"
+    "Language",
+    "Art"
   ]
 
   const submitClass = (e) => {
