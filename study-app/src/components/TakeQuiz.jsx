@@ -98,7 +98,7 @@ export default function TakeQuiz() {
         return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
       }),
     };
-    console.log('quiz data:', data);
+    // console.log('quiz data:', data);
     // calculate points
     let totalPoints = questionBank.reduce((acc, question, index) => {
       const correctAnswers = question.options.filter((option) => option.isCorrect).map((option) => option.answer);
@@ -128,12 +128,7 @@ export default function TakeQuiz() {
         return acc + (isCorrect ? question.options.find((option) => option.answer === userAnswer[0]).points : 0);
       }
     }, 0);
-    console.log('Total points:', totalPoints);
-    console.log('Possible points:', questionBank.reduce((acc, question) => {
-      return acc + question.options.reduce((acc, option) => {
-        return acc + option.points;
-      }, 0);
-    }, 0));
+
     // highlight correct answers
     const correctAnswers = questionBank.map((question) => {
       return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
@@ -155,9 +150,7 @@ export default function TakeQuiz() {
         }
       }
     });
-
-    // highlight correct answers
-
+    alert(`Quiz submitted! You scored ${totalPoints} points.`);
   }
 
   return (
@@ -189,14 +182,15 @@ export default function TakeQuiz() {
               <div key={index}>
                 <h3>{question.question}</h3>
                 {question.options.map((option, i) => (
-                  <div>
+                  <div key={i}>
                     <input
                       type={question.multiselect ? 'checkbox' : 'radio'}
+                      id={`question-${index}-option-${i}`}
                       name={`question-${index}`}
                       value={option.answer}
                       onChange={() => handleAnswerChange(index, i)}
                     />
-                    <label key={i}>
+                    <label htmlFor={`question-${index}-option-${i}`}>
                       {option.answer}
                     </label>
                   </div>

@@ -226,7 +226,7 @@ export default function CreateQuiz() {
     <div id="quizInfo">
       <h2>Quiz Information</h2>
       <div className="row">
-        <label for="quizTitle">Quiz Title:</label>
+        <label htmlFor="quizTitle">Quiz Title:</label>
         <input id="quizTitle" type="text" required maxLength={100} value={quizTitle} onChange={
           (e) => setQuizTitle(e.target.value)
         } />
@@ -235,7 +235,7 @@ export default function CreateQuiz() {
         </span>
       </div>
       <div className="row">
-        <label for="quizDescription">Quiz Description (optional):</label>
+        <label htmlFor="quizDescription">Quiz Description (optional):</label>
         <input
           id="quizDescription"
           type="text"
@@ -248,19 +248,19 @@ export default function CreateQuiz() {
         </span>
       </div>
       <div className="row">
-        <label for="releaseDate">Release Date:</label>
+        <label htmlFor="releaseDate">Release Date:</label>
         <input id="releaseDate" type="datetime-local" required onChange={
           (e) => setReleaseDate(e.target.value)
         } />
       </div>
       <div className="row">
-        <label for="dueDate">Due Date:</label>
+        <label htmlFor="dueDate">Due Date:</label>
         <input id="dueDate" type="datetime-local" required onChange={
           (e) => setDueDate(e.target.value)
         } />
       </div>
       <div className="row">
-        <label for="targetScore">Target Score (optional):</label>
+        <label htmlFor="targetScore">Target Score (optional):</label>
         <input id="targetScore" type="number" min="0"
           onChange={
             (e) => {
@@ -284,11 +284,11 @@ export default function CreateQuiz() {
       {
         questionBank.map(
           (question, index) => (
-            <>
+            <React.Fragment key={index}>
               <hr />
-              <div key={index}>
+              <div>
                 <div className="row">
-                  <label for={`question${index}`}>
+                  <label htmlFor={`question${index}`}>
                     Question {index + 1}:
                   </label>
                   <input
@@ -302,7 +302,7 @@ export default function CreateQuiz() {
                   <span className="char-counter">{1000 - question.question.length} chars left</span>
                 </div>
                 <div className="row">
-                  <label for={`points${index}`}>
+                  <label htmlFor={`points${index}`}>
                     Points:
                   </label>
                   <input
@@ -316,7 +316,7 @@ export default function CreateQuiz() {
                   />
                 </div>
                 <div className="row">
-                  <label for={`multiselect${index}`}>
+                  <label htmlFor={`multiselect${index}`}>
                     Multiple Select:
                   </label>
                   <input
@@ -329,7 +329,7 @@ export default function CreateQuiz() {
                 <div>
                   {question.options.map((option, optIndex) => (
                     <div key={optIndex}>
-                      <label for={`optionQ${index}A${optIndex}`}>
+                      <label htmlFor={`optionQ${index}A${optIndex}`}>
                         Option {optIndex + 1}:
                       </label>
                       <input
@@ -340,7 +340,7 @@ export default function CreateQuiz() {
                         onChange={e => updateOptionAnswer(e, index, optIndex)}
                       />
                       <span className="char-counter">{1000 - option.answer.length} chars left</span>
-                      <label for={`correctQ${index}A${optIndex}`}>
+                      <label htmlFor={`correctQ${index}A${optIndex}`}>
                         Correct Answer
                       </label>
                       <input type="checkbox"
@@ -364,7 +364,7 @@ export default function CreateQuiz() {
               <button onClick={
                 e => removeQuestion(e, index)
               }>Remove Question</button>
-            </>
+            </React.Fragment>
           )
         )
       }

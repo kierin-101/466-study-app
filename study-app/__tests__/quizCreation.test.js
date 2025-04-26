@@ -167,9 +167,7 @@ describe('CreateQuiz Component', () => {
     // Submit the form
     const submitButton = screen.getByText('Submit Quiz');
     fireEvent.click(submitButton);
-    // wait for submit to finish
-    // await waitFor(() => expect(fetch).not.toHaveBeenCalled());
-    // console.log('fetch called:', alert.mock.calls);
+
     // Verify alert was shown
     expect(alert).toHaveBeenCalledWith(expect.stringContaining('Release date must be before due date.'));
   });
