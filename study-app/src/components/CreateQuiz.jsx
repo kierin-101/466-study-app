@@ -57,6 +57,14 @@ export default function CreateQuiz() {
       }
     });
     setQuestionBank(() => questionBank);
+
+    // ensure dates are logical
+    const releaseDateObj = new Date(releaseDate);
+    const dueDateObj = new Date(dueDate);
+    if (releaseDateObj >= dueDateObj) {
+      alert('Release date must be before due date.');
+      return;
+    }
     const quizData = {
       title: quizTitle,
       description: quizDescription,
@@ -74,7 +82,20 @@ export default function CreateQuiz() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(quizData),
-    })
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Failed to create quiz.");
+      }
+    }
+    ).then((u_u) => {
+      alert('Quiz created successfully! Redirecting to class quizzes page...');
+      window.location.href = '/class?class=' + quizData.assignedClass;
+    }).catch((error) => {
+      console.error("Error:", error);
+      alert("Failed to create quiz. Please try again.");
+    });
   }
 
   const removeQuestion = (e, index) => {

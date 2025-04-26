@@ -8,6 +8,7 @@ export default function TakeQuiz() {
   const [dueDate, setDueDate] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [questionBank, setQuestionBank] = useState([]);
+  const [message, setMessage] = useState('');
 
   const [userAnswers, setUserAnswers] = useState([]);
 
@@ -30,6 +31,14 @@ export default function TakeQuiz() {
           setQuizDescription(data.description);
           setReleaseDate(new Date(data.release_timestamp).toString());
           setDueDate(new Date(data.due_timestamp).toString());
+          if (new Date(data.due_timestamp) < new Date()) {
+            setMessage('This quiz is no longer available.');
+            return
+          }
+          if (new Date(data.release_timestamp) > new Date()) {
+            setMessage('This quiz is not yet available');
+            return
+          }
           const questions = data.questions.map((question) => {
             return {
               question: question.question_text,
@@ -175,27 +184,28 @@ export default function TakeQuiz() {
         <p>Due Date: {dueDate}</p>
         <p>Current Time: {currentTime.toLocaleString()}</p>
         <div id="questionBank">
-          {questionBank.map((question, index) => (
-            <div key={index}>
-              <h3>{question.question}</h3>
-              {question.options.map((option, i) => (
-                <div>
-                  <input
-                    type={question.multiselect ? 'checkbox' : 'radio'}
-                    name={`question-${index}`}
-                    value={option.answer}
-                    onChange={() => handleAnswerChange(index, i)}
-                  />
-                  <label key={i}>
-                    {option.answer}
-                  </label>
-                </div>
-              ))}
-            </div>
-          ))}
+          {message ||
+            questionBank.map((question, index) => (
+              <div key={index}>
+                <h3>{question.question}</h3>
+                {question.options.map((option, i) => (
+                  <div>
+                    <input
+                      type={question.multiselect ? 'checkbox' : 'radio'}
+                      name={`question-${index}`}
+                      value={option.answer}
+                      onChange={() => handleAnswerChange(index, i)}
+                    />
+                    <label key={i}>
+                      {option.answer}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
+        {(questionBank.length >= 1) && <button type="submit">Submit Quiz</button>}
 
-        <button type="submit">Submit Quiz</button>
       </form>
     </>
   );
