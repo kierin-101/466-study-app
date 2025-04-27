@@ -121,17 +121,32 @@ router.get('/:quiz_id', async (req, res) => {
 // Route to store user answers to quiz
 
 router.post('/user-answers', async(req, res) => {
-  const { attempt, answers } = req.body;
+  const { quiz_id, answers } = req.body;
   const config = req.config;
   const user_id = req.session?.userId
   console.log(user_id);
 
-  if (!attempt || !Array.isArray(answers)) {
+  if (!quiz_id || !Array.isArray(answers)) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
     const pool = await getPool(config);
+
+    const attemptResults = await pool.request()
+      .input('user_id', sql.Int, user_id)
+      .input('quiz_id', sql.Int, quiz_id)
+      .query(`
+        SELECT ISNULL(MAX(attempt), 0 ) AS last_attempt
+        FROM UserAnswers ua
+        JOIN ANSWERS a ON ua.answer_id = a.answer_id
+        JOIN Questions q ON a.question_id = q.question_id
+        WHERE ua.user_id = @user_id and q.quiz_id = @quiz_id
+        `);
+
+    const lastAttempt = attemptResults.recordset[0].last_attempt;
+    const newAttempt = lastAttempt + 1;
+
     const transaction = new sql.Transaction(pool);
     await transaction.begin();
 
@@ -140,7 +155,7 @@ router.post('/user-answers', async(req, res) => {
       const request = new sql.Request(transaction);
       await request
         .input('user_id', sql.Int, user_id)
-        .input('attempt', sql.Int, attempt)
+        .input('attempt', sql.Int, newAttempt)
         .input('answer_id', sql.Int, ans.answer_id)
         .query(`
           INSERT INTO UserAnswers (user_id, attempt, answer_id)
