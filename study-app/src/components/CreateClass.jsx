@@ -5,7 +5,7 @@ export default function CreateClass({teacherView}) {
   const [classSubject, setClassSubject] = useState('');
   const [pointsCap, setPointsCap] = useState(100);
 
-  //how specific do we want to get with these
+  // A basic list of subjects.
   const subjects = [
     "English",
     "Math",
@@ -23,6 +23,7 @@ export default function CreateClass({teacherView}) {
     "Art"
   ]
 
+  // Asks the server to create a new class under the details given.
   const submitClass = (e) => {
     e.preventDefault(); // prevent refresh
     const classInfo = {
@@ -48,6 +49,7 @@ export default function CreateClass({teacherView}) {
       })
       .then((data) => {
         console.log(data.class.class_id);
+        // Adds the class creator to the class.
         fetch("http://localhost:5000/api/class/join", {
           method: "POST",
           credentials: "include",
@@ -71,6 +73,7 @@ export default function CreateClass({teacherView}) {
       });
   }
 
+  // Students cannot create classes, so teacherView prop acts as a permissions check.
   if (!teacherView) {
     return <h2>Sorry, student accounts cannot create classes. If you are a teacher, please sign up with a teacher account.</h2>
   } else {

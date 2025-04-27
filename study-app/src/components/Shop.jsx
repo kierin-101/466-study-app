@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import AvatarDisplay from "./AvatarDisplay";
 
+// Subcomponent for individual items in the shop, displays them differently based on type (as stored by the server)
 const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
 
   const canAfford = displayedPoints >= itemDetails.point_cost;
 
-  if (itemDetails.reward_type_id === 1) {
+  if (itemDetails.reward_type_id === 1) { // 1 = avatar
     return (
       <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
@@ -19,7 +20,7 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
         }
       </div>
     )
-  } else if (itemDetails.reward_type_id === 2) {
+  } else if (itemDetails.reward_type_id === 2) { // 2 = title
     return (
       <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
@@ -31,7 +32,7 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
         }
       </div>
     )
-  } else if (itemDetails.reward_type_id === 3) {
+  } else if (itemDetails.reward_type_id === 3) { // 3 = theme
     return (
       <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
@@ -58,6 +59,8 @@ const Shop = ({username}) => {
   const [displayedPoints, setDisplayedPoints] = useState();
   const [refresh, setRefresh] = useState(0);
 
+  // Gets the full list of rewards (including user rewards to determine what is owned and active) from the server.
+  // Needs to refresh every time major details (such as user's remaining points) have been changed.
   useEffect(() => {
     // call reward retrieval API
     fetch(`http://localhost:5000/api/shop/rewards`, {
@@ -107,6 +110,8 @@ const Shop = ({username}) => {
       })
   }, [refresh]);
 
+  // Asks the server to equip a selected reward (and unequip all rewards of the same type).
+  // The refresh triggered by this action will allow the client to update so the equipped reward is displayed.
   const handleEquip = (itemDetails) => {
     const userItem = {
       user_reward_id: itemDetails.user_reward_id
@@ -137,6 +142,8 @@ const Shop = ({username}) => {
       });
   }
 
+  // Asks the server to purchase a selected reward and deduct points accordingly.
+  // The refresh triggered by this action will allow the client to accurately track changes in points.
   const handlePurchase = (itemDetails) => {
     if (window.confirm(`Are you sure you want to purchase ${itemDetails.reward_name} for ${itemDetails.point_cost} points?`)) {
       // call item purchase API
@@ -168,7 +175,7 @@ const Shop = ({username}) => {
     }
   }
 
-
+  // Fixed sidebar showing user's active rewards, points, etc.
   const PreviewSidebar = () => {
     return (
         <div style={{height: "100%", width: "30vw", maxWidth: "30vw", background: "lightgrey", position: "fixed"}}>

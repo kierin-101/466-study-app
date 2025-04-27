@@ -1,3 +1,4 @@
+// Appears at the top of all pages. Takes the loggedIn prop to determine which options should be shown to the active user.
 const NavBar = ({ loggedIn }) => {
   return (
     <nav style={{ position: 'sticky', top: 0, left: 0, right: 0 }}>

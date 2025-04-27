@@ -5,6 +5,9 @@ const SignUp = () => {
   const [passwordEntry, setPasswordEntry] = useState("");
   const [educatorStatus, setEducatorStatus] = useState(false);
 
+  // Given the user's selections, communicates to the server via procedure calls to attempt to register an account with their inputs.
+  // If the server tells the client the action was successful, client then requests server to log them in with the new credentials.
+  // If the signup failed, an error message is displayed based on what the server tells us.
   const registerUser = (e) => {
     e.preventDefault(); // prevent refresh
     const user = {

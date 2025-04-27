@@ -4,6 +4,7 @@ export default function JoinClass({teacherView}) {
   const [idEntered, setIdEntered] = useState();
   const [searchResult, setSearchResult] = useState(null);
 
+  // Asks the server if we have a class by the entered id, displays its information if so.
   const findClass = (e) => {
     e.preventDefault(); // prevent refresh
     console.log(`code: ${idEntered}`);
@@ -37,9 +38,10 @@ export default function JoinClass({teacherView}) {
       });
   }
 
+  // Asks the server to add the active user to the class they requested to join. If successful, client asks user if they'd
+  // like to view that class's page now.
   const confirmJoin = (e) => {
     e.preventDefault(); // prevent refresh
-    //this'll add the user to their class and redirect them to the class
     const classData = {
       class_id: idEntered
     };
@@ -69,6 +71,7 @@ export default function JoinClass({teacherView}) {
       });
   }
   
+  // teacherView prop exists for this purpose: joining classes is a student-only feature.
   if (teacherView) {
     return <h2>Teachers cannot join classes as students. Please create a class instead.</h2>
   } else {
