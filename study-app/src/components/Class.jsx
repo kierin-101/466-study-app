@@ -3,7 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import AvatarDisplay from "./AvatarDisplay";
 
 const Class = ({ userId, teacherView }) => {
-  const classId = new URLSearchParams(window.location.search).get("class");
+  const classId = new URLSearchParams(window.location.search).get("class"); //grabs class_id from the url
   const [classData, setClassData] = useState({
     class_id: null,
     class_name: null,
@@ -12,8 +12,8 @@ const Class = ({ userId, teacherView }) => {
   });
   const [peopleList, setPeopleList] = useState([]);
   const [quizList, setQuizList] = useState([]);
-  const [isMember, setIsMember] = useState(false); //To verify user is a class member
-  const [loading, setLoading] = useState(true); //Prevent premature blocking of members, doesn't matter for the rest
+  const [isMember, setIsMember] = useState(false); // To verify user is a class member
+  const [loading, setLoading] = useState(true); // Prevent premature blocking of members from accessing the page when data is being fetched
 
   useEffect(() => {
     // call class details API
@@ -52,7 +52,11 @@ const Class = ({ userId, teacherView }) => {
       })
       .then((data) => {
         setPeopleList(data);
-        if (data.filter((person) => {return person.user_id === userId}).length) {
+        if (
+          data.filter((person) => {
+            return person.user_id === userId;
+          }).length
+        ) {
           setIsMember(true);
         }
         setLoading(false);
@@ -75,13 +79,41 @@ const Class = ({ userId, teacherView }) => {
         }
       })
       .then((data) => {
-        setQuizList(data.quizzes);
+        setQuizList(
+          data.quizzes.map((quiz) => {
+            const highScore = fetch(
+              `http://localhost:5000/api/quiz/retrieve-high-scores/${quiz.quiz_id}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+              .then((response) => {
+                if (response.ok) {
+                  return response.json();
+                } else {
+                  throw new Error("Failed to retrieve class quizzes data");
+                }
+              })
+              .then((data) => {
+                return data[0] || "N/A";
+              })
+              .catch((error) => {
+                console.error("Error: ", error);
+                return "Could not find...";
+              });
+            return { ...quiz, high_score: highScore };
+          })
+        );
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }, [classId]);
 
+  // Basic details of the class are shown on a fixed sidebar.
   const ClassSidebar = () => {
     return (
       <div
@@ -113,10 +145,18 @@ const Class = ({ userId, teacherView }) => {
     );
   };
 
+  // Displays a given class member's profile; retains index for the teacher view case so the list can be adjusted by the client
+  // once the server successfully removes someone rather than needing an extra database fetch to update the list.
   const displayPerson = (personDetails, index) => {
-    const avatar = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 1})[0]?.reward_name;
-    const title = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 2})[0]?.reward_name;
-    const theme = personDetails.active_rewards?.filter((reward) => {return reward.reward_type_id === 3})[0]?.reward_name;
+    const avatar = personDetails.active_rewards?.filter((reward) => {
+      return reward.reward_type_id === 1;
+    })[0]?.reward_name;
+    const title = personDetails.active_rewards?.filter((reward) => {
+      return reward.reward_type_id === 2;
+    })[0]?.reward_name;
+    const theme = personDetails.active_rewards?.filter((reward) => {
+      return reward.reward_type_id === 3;
+    })[0]?.reward_name;
 
     return (
       <div
@@ -142,7 +182,11 @@ const Class = ({ userId, teacherView }) => {
             gap: "16px",
           }}
         >
-          <AvatarDisplay dimension="64px" avatarName={avatar} borderName={theme} />
+          <AvatarDisplay
+            dimension="64px"
+            avatarName={avatar}
+            borderName={theme}
+          />
           <h3 style={{ width: "25%" }}>{personDetails.username}</h3>
           <p style={{ width: "25%" }}>{title}</p>
           <p style={{ width: "25%" }}>
@@ -162,6 +206,8 @@ const Class = ({ userId, teacherView }) => {
     );
   };
 
+  // Only shown to active users who are teachers, they can remove a student from their class by pressing the button beside their name.
+  // Asks the server to delete the class from the target user's list of active classes.
   const removeMember = (personDetails, index) => {
     if (
       window.confirm(
@@ -238,7 +284,8 @@ const Class = ({ userId, teacherView }) => {
             {quizDetails.target_score || "None"}
           </p>
           <p style={{ width: "20%" }}>
-            <b>My Record: </b>todo
+            <b>My Record: </b>
+            {quizDetails.high_score}
           </p>
         </a>
       </div>
@@ -246,13 +293,16 @@ const Class = ({ userId, teacherView }) => {
   };
 
   if (loading) {
-    return <h2 style={{margin: "50vh auto", textAlign: "center"}}>Loading...</h2>
+    return (
+      <h2 style={{ margin: "50vh auto", textAlign: "center" }}>Loading...</h2>
+    );
   }
 
+  // Should not provide class access to people who are not in the class.
   if (!isMember) {
-    return <h2>You are not a member of this class.</h2>
+    return <h2>You are not a member of this class.</h2>;
   }
-  
+
   return (
     <div style={{ display: "flex" }}>
       <ClassSidebar />
@@ -314,7 +364,10 @@ const Class = ({ userId, teacherView }) => {
               {quizList
                 .filter((quiz) => {
                   const now = new Date();
-                  return new Date(quiz.due_timestamp) > now && new Date(quiz.release_timestamp) <= now;
+                  return (
+                    new Date(quiz.due_timestamp) > now &&
+                    new Date(quiz.release_timestamp) <= now
+                  );
                 })
                 .map((quiz) => displayQuiz(quiz))}
             </div>

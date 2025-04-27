@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
+// Will show a list of links to all the user's registered classes, as well as a button to either join (for students)
+// or create (for teachers) a new class.
 const ClassOverview = ({teacherView}) => {
   const [classList, setClassList] = useState([]);
 
+  // Requests active user's list of classes from the server for display.
   useEffect (() => {
     // call class overview API
     fetch("http://localhost:5000/api/class/overview", {
