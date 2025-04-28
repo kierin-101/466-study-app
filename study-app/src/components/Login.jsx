@@ -4,6 +4,8 @@ const Login = () => {
   const [usernameEntry, setUsernameEntry] = useState("");
   const [passwordEntry, setPasswordEntry] = useState("");
 
+  // Attempts to authenticate the user by sending the entered credentials to the server for verification.
+  // If successful, logs in the user client-side. If unsuccesssful, directs user to check credentials and retry.
   const authenticateUser = (e) => {
     e.preventDefault(); // prevent refresh
     const user = {
@@ -53,7 +55,7 @@ const Login = () => {
     >
       <h1>Login</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="username">Username:</label>
+        <label htmlFor="username">Username:</label>
         <input
           required
           id="username"
@@ -64,7 +66,7 @@ const Login = () => {
         ></input>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="password">Password:</label>
+        <label htmlFor="password">Password:</label>
         <input
           required
           type="password"

@@ -125,6 +125,7 @@ router.post('/user-answers', async(req, res) => {
   const config = req.config;
   const user_id = req.session?.userId
   console.log(user_id);
+  console.log(answers);
 
   if (!quiz_id || !Array.isArray(answers)) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -177,7 +178,7 @@ router.post('/award-points', async (req, res) => {
   const user_id = req.session?.userId;
   const config = req.config;
 
-  if(!points_delta || !description) {
+  if(points_delta === undefined || !description) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -246,9 +247,9 @@ router.post('/award-points', async (req, res) => {
       `);
     await transaction.commit();
     if(pointsToAward < points_delta) {
-      res.status(200).json({ message: `Partial points awarded. You earned ${pointsToAward} point(s).`})
+      res.status(200).json({ message: `Quiz submitted! Daily cap reached. Partial points were awarded. You earned ${pointsToAward} point(s).`})
     } else {
-      res.status(200).json({message: 'Points awarded successfully' });
+      res.status(200).json({message: `Quiz submitted! You earned ${points_delta} points.` });
     }
 
   } catch (err) {

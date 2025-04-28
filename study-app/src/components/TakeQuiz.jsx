@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 export default function TakeQuiz() {
   // const [quizId, setQuizId] = useState('12345');
-  const [quizTitle, setQuizTitle] = useState('Quiz loading...');
-  const [quizDescription, setQuizDescription] = useState('');
-  const [releaseDate, setReleaseDate] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [quizTitle, setQuizTitle] = useState("Quiz loading...");
+  const [quizDescription, setQuizDescription] = useState("");
+  const [releaseDate, setReleaseDate] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [questionBank, setQuestionBank] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const [userAnswers, setUserAnswers] = useState([]);
+  const [userAnswerIDs, setUserAnswerIDs] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,11 +21,11 @@ export default function TakeQuiz() {
   }, []);
 
   useEffect(() => {
+    const quizID = new URLSearchParams(window.location.search).get("quiz");
     // fetch quiz questions from the server
     const fetchQuestions = async () => {
-      const quizID = new URLSearchParams(window.location.search).get('quiz');
       // general quiz data
-      fetch('http://localhost:5000/api/quiz/' + quizID)
+      fetch("http://localhost:5000/api/quiz/" + quizID)
         .then((response) => response.json())
         .then((data) => {
           setQuizTitle(data.title);
@@ -32,29 +33,31 @@ export default function TakeQuiz() {
           setReleaseDate(new Date(data.release_timestamp).toString());
           setDueDate(new Date(data.due_timestamp).toString());
           if (new Date(data.due_timestamp) < new Date()) {
-            setMessage('This quiz is no longer available.');
-            return
+            setMessage("This quiz is no longer available.");
+            return;
           }
           if (new Date(data.release_timestamp) > new Date()) {
-            setMessage('This quiz is not yet available');
-            return
+            setMessage("This quiz is not yet available");
+            return;
           }
           const questions = data.questions.map((question) => {
             return {
+              questionID: question.quesion_id,
               question: question.question_text,
               options: question.answers.map((option) => ({
+                answerID: option.answer_id,
                 answer: option.answer_text,
                 isCorrect: option.is_correct,
                 points: option.points_rewarded,
               })),
               multiselect: question.multiple_select,
             };
-          }
-          );
+          });
           setQuestionBank(questions);
           setUserAnswers(Array(questions.length).fill([])); // Initialize user answers
+          setUserAnswerIDs(Array(questions.length).fill([])); // Initialize user answer IDs
         })
-        .catch((error) => console.error('Error fetching quiz:', error));
+        .catch((error) => console.error("Error fetching quiz:", error));
     };
     fetchQuestions();
   }, []);
@@ -62,7 +65,9 @@ export default function TakeQuiz() {
   function handleAnswerChange(questionIndex, answerIndex) {
     const question = questionBank[questionIndex];
     const selectedAnswer = question.options[answerIndex].answer;
+    const selectedAnswerID = question.options[answerIndex].answerID;
     let updatedAnswers = [...userAnswers];
+    let updatedAnswerIDs = [...userAnswerIDs];
 
     if (question.multiselect) {
       // Toggle the answer for multiselect questions
@@ -72,36 +77,68 @@ export default function TakeQuiz() {
         );
       } else {
         updatedAnswers[questionIndex].push(selectedAnswer);
+        updatedAnswerIDs[questionIndex].push(selectedAnswerID);
       }
     } else {
       // For single select questions, just set the answer
       updatedAnswers[questionIndex] = [selectedAnswer];
+      updatedAnswerIDs[questionIndex] = [selectedAnswerID];
     }
     setUserAnswers(updatedAnswers);
+    setUserAnswerIDs(updatedAnswerIDs);
   }
 
   function handleSubmit(e) {
     e.preventDefault();
     // Logic to submit the quiz
-    const quizID = new URLSearchParams(window.location.search).get('quiz');
+    const quizID = new URLSearchParams(window.location.search).get("quiz");
     const answers = userAnswers.map((userAnswer, index) => {
       return {
         question: questionBank[index].question,
         selectedAnswers: userAnswer,
       };
     });
+    console.log(userAnswerIDs);
+    //submits this set of user answers to the database
+    fetch(`http://localhost:5000/api/quiz/user-answers`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        quiz_id: quizID,
+        answers: userAnswerIDs.flat().map((ans) => {
+          return { answer_id: ans };
+        }),
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to submit answers.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
     const data = {
       quizID: quizID,
       answers: answers,
       userAnswers: userAnswers,
       correctAnswers: questionBank.map((question) => {
-        return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
+        return question.options
+          .filter((option) => option.isCorrect)
+          .map((option) => option.answer);
       }),
     };
     // console.log('quiz data:', data);
     // calculate points
     let totalPoints = questionBank.reduce((acc, question, index) => {
-      const correctAnswers = question.options.filter((option) => option.isCorrect).map((option) => option.answer);
+      const correctAnswers = question.options
+        .filter((option) => option.isCorrect)
+        .map((option) => option.answer);
       const userAnswer = userAnswers[index];
       if (question.multiselect) {
         // For multiselect questions, add for correct, subtract for incorrect
@@ -125,32 +162,68 @@ export default function TakeQuiz() {
       } else {
         // For single select questions, check if the selected answer is correct
         const isCorrect = correctAnswers[0] === userAnswer[0];
-        return acc + (isCorrect ? question.options.find((option) => option.answer === userAnswer[0]).points : 0);
+        return (
+          acc +
+          (isCorrect
+            ? question.options.find((option) => option.answer === userAnswer[0])
+                .points
+            : 0)
+        );
       }
     }, 0);
+    console.log(totalPoints);
 
-    // highlight correct answers
-    const correctAnswers = questionBank.map((question) => {
-      return question.options.filter((option) => option.isCorrect).map((option) => option.answer);
-    });
+    fetch(`http://localhost:5000/api/quiz/award-points`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        points_delta: totalPoints,
+        description: `Earned taking quiz ${quizID}, ${quizTitle}`,
+        quiz_id: quizID,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to grade this quiz.");
+        }
+      })
+      .then((data) => {
+        // highlight correct answers
+        const correctAnswers = questionBank.map((question) => {
+          return question.options
+            .filter((option) => option.isCorrect)
+            .map((option) => option.answer);
+        });
 
-    document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((input) => {
-      const questionIndex = parseInt(input.name.split('-')[1]);
-      if (questionBank[questionIndex].multiselect) {
-        if (correctAnswers[questionIndex].includes(input.value)) {
-          input.parentElement.style.color = 'green';
-        } else {
-          input.parentElement.style.color = 'red';
-        }
-      } else {
-        if (correctAnswers[questionIndex][0] === input.value) {
-          input.parentElement.style.color = 'green';
-        } else {
-          input.parentElement.style.color = 'red';
-        }
-      }
-    });
-    alert(`Quiz submitted! You scored ${totalPoints} points.`);
+        document
+          .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+          .forEach((input) => {
+            const questionIndex = parseInt(input.name.split("-")[1]);
+            if (questionBank[questionIndex].multiselect) {
+              if (correctAnswers[questionIndex].includes(input.value)) {
+                input.parentElement.style.color = "green";
+              } else {
+                input.parentElement.style.color = "red";
+              }
+            } else {
+              if (correctAnswers[questionIndex][0] === input.value) {
+                input.parentElement.style.color = "green";
+              } else {
+                input.parentElement.style.color = "red";
+              }
+            }
+          });
+        alert(data.message);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("There was an error grading the quiz. Please try again.");
+      });
   }
 
   return (
@@ -184,7 +257,7 @@ export default function TakeQuiz() {
                 {question.options.map((option, i) => (
                   <div key={i}>
                     <input
-                      type={question.multiselect ? 'checkbox' : 'radio'}
+                      type={question.multiselect ? "checkbox" : "radio"}
                       id={`question-${index}-option-${i}`}
                       name={`question-${index}`}
                       value={option.answer}
@@ -198,8 +271,7 @@ export default function TakeQuiz() {
               </div>
             ))}
         </div>
-        {(questionBank.length >= 1) && <button type="submit">Submit Quiz</button>}
-
+        {questionBank.length >= 1 && <button type="submit">Submit Quiz</button>}
       </form>
     </>
   );

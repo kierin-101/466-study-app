@@ -104,7 +104,7 @@ const Class = ({ userId, teacherView }) => {
                 console.error("Error: ", error);
                 return "Could not find...";
               });
-            return { ...quiz, high_score: highScore };
+            return { ...quiz, high_score: highScore[0] };
           })
         );
       })
