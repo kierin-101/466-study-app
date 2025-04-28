@@ -98,13 +98,15 @@ const Class = ({ userId, teacherView }) => {
                 }
               })
               .then((data) => {
-                return data[0] || "N/A";
+                console.log(data);
+                const userRecord = data.filter((record) => record.user_id === userId)[0]?.high_score;
+                return userRecord === undefined ? "N/A" : userRecord;
               })
               .catch((error) => {
                 console.error("Error: ", error);
                 return "Could not find...";
               });
-            return { ...quiz, high_score: highScore[0] };
+            return { ...quiz, high_score: highScore };
           })
         );
       })
