@@ -184,34 +184,43 @@ router.post('/award-points', async (req, res) => {
   try {
     const pool = await sql.connect(config);
 
-    const { recordset: userClasses } = await pool.request()
-    .input('user_id', sql.Int, user_id)
+    const { recordset: quizClassResult } = await pool.request()
+    .input('quiz_id', sql.Int, quiz_id)
     .query(`
       SELECT c.daily_point_cap
-      FROM UserClasses uc
-      JOIN Classes c ON uc.class_id = c.class_id
-      WHERE uc.user_id = @user_id
+      FROM Quizzes q
+      JOIN Classes c ON q.class_id = c.class_id
+      WHERE q.quiz_id = @quiz_id
       `);
 
-    if (userClasses.length === 0) {
-      return res.status(400).json({ error: 'User is not enrolled in a class' });
+    if (quizClassResult.length === 0) {
+      return res.status(400).json({ error: 'Invalid quiz_id' });
     }
 
-    const dailyCap = userClasses[0].daily_point_cap;
+    const dailyCap = quizClassResult[0].daily_point_cap;
 
     const { recordset: pointsTodayResult } = await pool.request()
     .input('user_id', sql.Int, user_id)
+    .input('quiz_id', sql.Int, quiz_id)
     .query(`
       SELECT ISNULL(SUM(points_delta), 0) AS points_today
-      FROM PointsHistory
-      WHERE user_id = @user_id
+      FROM PointsHistory ph
+      JOIN Quizzes q ON ph.quiz_id = q.quiz_id
+      WHERE ph.user_id = @user_id
+        AND q.class_id = (
+          SELECT class_id FROM Quizzes WHERE quiz_id = @quiz_id
+        )
         AND CAST(transaction_timestamp AS DATE) = CAST(GETDATE() AS DATE)
         `);
     const pointsToday = pointsTodayResult[0].points_today;
 
-    if (pointsToday + points_delta > dailyCap) {
-      return res.status(400).json({ error: 'Daily point cap exceeded' });
+    const pointsRemaining = dailyCap - pointsToday;
+
+    if (pointsRemaining <= 0) {
+      return res.status(400).json({ error: 'Daily point cap already reached' });
     }
+
+    const pointsToAward = Math.min(points_delta, pointsRemaining);
 
     const transaction = new sql.Transaction(pool);
     await transaction.begin();
@@ -219,7 +228,7 @@ router.post('/award-points', async (req, res) => {
 
     await new sql.Request(transaction)
       .input('user_id', sql.Int, user_id)
-      .input('points_delta', sql.Int, points_delta)
+      .input('points_delta', sql.Int, pointsToAward)
       .input('description', sql.NVarChar(1000), description)
       .input('quiz_id', sql.Int, quiz_id || null)
       .query(`
@@ -229,15 +238,19 @@ router.post('/award-points', async (req, res) => {
 
     await new sql.Request(transaction)
       .input('user_id', sql.Int, user_id)
-      .input('points_delta', sql.Int, points_delta)
+      .input('points_delta', sql.Int, pointsToAward)
       .query(`
         UPDATE Users
         SET points = points + @points_delta
         WHERE user_id = @user_id
       `);
     await transaction.commit();
+    if(pointsToAward < points_delta) {
+      res.status(200).json({ message: `Partial points awarded. You earned ${pointsToAward} point(s).`})
+    } else {
+      res.status(200).json({message: 'Points awarded successfully' });
+    }
 
-    res.status(200).json({message: 'Points awarded successfully' });
   } catch (err) {
     console.error('Error awarding points: ', err);
     res.status(500).json({ error: 'Failed to award points' });
