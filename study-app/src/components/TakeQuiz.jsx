@@ -42,7 +42,7 @@ export default function TakeQuiz() {
           }
           const questions = data.questions.map((question) => {
             return {
-              questionID: question.quesion_id,
+              questionID: question.question_id,
               question: question.question_text,
               options: question.answers.map((option) => ({
                 answerID: option.answer_id,
@@ -166,7 +166,7 @@ export default function TakeQuiz() {
           acc +
           (isCorrect
             ? question.options.find((option) => option.answer === userAnswer[0])
-                .points
+              .points
             : 0)
         );
       }
