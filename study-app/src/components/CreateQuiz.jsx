@@ -88,7 +88,7 @@ export default function CreateQuiz() {
           throw new Error("Failed to create quiz.");
         }
       }
-      ).then((u_u) => {
+      ).then(() => {
         alert('Quiz created successfully! Redirecting to class quizzes page...');
         window.location.href = '/class?class=' + quizData.assignedClass;
       }).catch((error) => {

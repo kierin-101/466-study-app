@@ -26,7 +26,7 @@ const Logout = ({onLogout}) => {
         console.error("Error:", error);
         setMessage("There was an issue logging you out. Please try again.");
       });
-  }, []);
+  }, [onLogout]);
 
   return <h2>{message}</h2>;
 };

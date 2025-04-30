@@ -92,12 +92,6 @@ export default function TakeQuiz() {
     e.preventDefault();
     // Logic to submit the quiz
     const quizID = new URLSearchParams(window.location.search).get("quiz");
-    const answers = userAnswers.map((userAnswer, index) => {
-      return {
-        question: questionBank[index].question,
-        selectedAnswers: userAnswer,
-      };
-    });
     console.log(userAnswerIDs);
     //submits this set of user answers to the database
     fetch(`http://localhost:5000/api/quiz/user-answers`, {
@@ -123,17 +117,6 @@ export default function TakeQuiz() {
       .catch((error) => {
         console.error("Error:", error);
       });
-    const data = {
-      quizID: quizID,
-      answers: answers,
-      userAnswers: userAnswers,
-      correctAnswers: questionBank.map((question) => {
-        return question.options
-          .filter((option) => option.isCorrect)
-          .map((option) => option.answer);
-      }),
-    };
-    // console.log('quiz data:', data);
     // calculate points
     let totalPoints = questionBank.reduce((acc, question, index) => {
       const correctAnswers = question.options
