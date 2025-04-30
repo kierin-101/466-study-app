@@ -5,7 +5,6 @@ import CreateQuiz from '../src/components/CreateQuiz';
 import { enableFetchMocks } from 'jest-fetch-mock';
 import { jest, expect, describe, beforeEach, test } from '@jest/globals';
 
-
 enableFetchMocks();
 
 const fillDummyQuizFields = () => {

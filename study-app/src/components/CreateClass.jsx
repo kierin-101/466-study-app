@@ -93,7 +93,7 @@ export default function CreateClass({teacherView}) {
       >
         <h1>Create a Class</h1>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label for="className">Class Name:</label>
+          <label htmlFor="className">Class Name:</label>
           <input
             id="className"
             required
@@ -104,22 +104,23 @@ export default function CreateClass({teacherView}) {
           ></input>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label for="subject">Subject:</label>
+          <label htmlFor="subject">Subject:</label>
           <select
             id="subject"
             required
+            defaultValue={""}
             onChange={(e) => {
               setClassSubject(e.target.value);
             }}
           >
-            <option disabled selected>Choose a Subject</option>
+            <option disabled value="">Choose a Subject</option>
             {subjects.map((subject) => {
-              return (<option>{subject}</option>)
+              return (<option key={subject}>{subject}</option>)
             })}
           </select>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <label for="points">Daily Points Cap:</label>
+          <label htmlFor="points">Daily Points Cap:</label>
           <input
             id="points"
             type="number"

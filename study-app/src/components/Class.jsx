@@ -113,7 +113,7 @@ const Class = ({ userId, teacherView }) => {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [classId]);
+  }, [classId, userId]);
 
   // Basic details of the class are shown on a fixed sidebar.
   const ClassSidebar = () => {
@@ -233,7 +233,7 @@ const Class = ({ userId, teacherView }) => {
             throw new Error("Failed to remove user");
           }
         })
-        .then((data) => {
+        .then(() => {
           const updatedPeople = [...peopleList];
           updatedPeople.splice(index, 1);
           setPeopleList(updatedPeople);

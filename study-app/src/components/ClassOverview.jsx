@@ -38,7 +38,7 @@ const ClassOverview = ({teacherView}) => {
         <div><a className="classOverviewLink" style={{fontSize:"8em"}} href={teacherView ? "/createClass" : "/joinClass"}>+</a></div>
         {classList.map((c) => {
           return (
-            <div>
+            <div key={`classDiv${c.class_id}`}>
               <a key={`classLink${c.class_id}`} className="classOverviewLink" href={`/class?class=${c.class_id}`}>
                 <div style={{display:"flex", flexDirection: "column", alignItems: "center", textAlign: "center"}}>
                   <h1>{c.class_name}</h1>
