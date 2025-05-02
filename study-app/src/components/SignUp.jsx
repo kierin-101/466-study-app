@@ -81,7 +81,7 @@ const SignUp = () => {
       onSubmit={registerUser}>
       <h1>Sign Up</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="username">Username:</label>
+        <label htmlFor="username">Username:</label>
         <input
           required
           id="username"
@@ -92,7 +92,7 @@ const SignUp = () => {
         ></input>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <label for="password">Password:</label>
+        <label htmlFor="password">Password:</label>
         <input
           required
           type="password"
@@ -124,7 +124,7 @@ const SignUp = () => {
               setEducatorStatus(false);
             }}
           />
-          <label for="student">Student</label>
+          <label htmlFor="student">Student</label>
         </div>
         <div>
           <input
@@ -137,7 +137,7 @@ const SignUp = () => {
               setEducatorStatus(true);
             }}
           />
-          <label for="teacher">Teacher</label>
+          <label htmlFor="teacher">Teacher</label>
         </div>
       </div>
       <button type="submit">Sign Up</button>
