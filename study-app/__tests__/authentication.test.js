@@ -20,6 +20,47 @@ delete window.location;
 window.location = { href: "" };
 
 describe("Signup Component", () => {
+  test("properly handles the server saying the username is taken", async () => {
+    // setup failure response
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      json: () => Promise.resolve({ message: "Username already exists" }),
+    });
+
+    render(<Signup />);
+
+    //fill page
+    const username = screen.getByLabelText("Username:");
+    fireEvent.change(username, { target: { value: "teacher" } });
+    const password = screen.getByLabelText("Password:");
+    fireEvent.change(password, { target: { value: "1234" } });
+    const teacherButton = screen.getByLabelText("Teacher");
+    fireEvent.click(teacherButton);
+
+    //submit
+    const submitButton = screen.getByRole("button");
+    fireEvent.click(submitButton);
+
+    // wait for mock fetch to resolve
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/account/register"),
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          "Content-Type": "application/json",
+        }),
+      })
+    );
+
+    // wait for failure message
+    await waitFor(() =>
+      expect(window.alert).toHaveBeenCalledWith(
+        "Registration failed: Error: Username already exists"
+      )
+    );
+  });
+
   test("submits valid new user to database", async () => {
     // setup success response
     jest.clearAllMocks();
@@ -134,50 +175,48 @@ describe("Signup Component", () => {
     // expect form to block this attempt
     expect(fetch).not.toHaveBeenCalled();
   });
+});
 
-  test("properly handles the server saying the username is taken", async () => {
-    // setup failure response
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      json: () => Promise.resolve({ message: "Username already exists" }),
-    });
-
-    render(<Signup />);
+describe("Login Component", () => {
+  test("properly notifies user if login failed", async () => {
+    render(<Login />);
 
     //fill page
     const username = screen.getByLabelText("Username:");
-    fireEvent.change(username, { target: { value: "teacher" } });
+    fireEvent.change(username, { target: { value: "someone" } });
     const password = screen.getByLabelText("Password:");
-    fireEvent.change(password, { target: { value: "1234" } });
-    const teacherButton = screen.getByLabelText("Teacher");
-    fireEvent.click(teacherButton);
+    fireEvent.change(password, { target: { value: "abcd" } });
 
     //submit
     const submitButton = screen.getByRole("button");
     fireEvent.click(submitButton);
 
+    //setup failure response
+    fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      json: () => Promise.resolve({ message: 'Not found' }),
+    });
+
     // wait for mock fetch to resolve
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/api/account/register"),
+    await waitFor(() => expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/account/login"),
       expect.objectContaining({
         method: "POST",
         headers: expect.objectContaining({
           "Content-Type": "application/json",
         }),
       })
-    );
+    ));
 
     // wait for failure message
     await waitFor(() =>
       expect(window.alert).toHaveBeenCalledWith(
-        "Registration failed: Error: Username already exists"
+        "Your login attempt failed. Please check your credentials and try again."
       )
     );
   });
-});
 
-describe("Login Component", () => {
   test("handles login correctly if authentication succeeds", async () => {
     jest.clearAllMocks();
     render(<Login />);
@@ -215,7 +254,7 @@ describe("Login Component", () => {
     await waitFor(() => expect(window.location.href).toMatch("/"));
   });
 
-  test("does not attempt login for empty username", async () => {
+  test("will not attempt login for empty username", async () => {
     jest.clearAllMocks();
     render(<Login />);
 
@@ -231,7 +270,7 @@ describe("Login Component", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  test("does not attempt login for empty password", async () => {
+  test("will not attempt login for empty password", async () => {
     jest.clearAllMocks();
     render(<Login />);
 
@@ -247,44 +286,6 @@ describe("Login Component", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  test("properly notifies user if login failed", async () => {
-    //setup failure response
-    fetch.mockResolvedValue({
-      ok: false,
-      json: () => Promise.resolve({ message: "Invalid credentials" }),
-    });
-
-    render(<Login />);
-
-    //fill page
-    const username = screen.getByLabelText("Username:");
-    fireEvent.change(username, { target: { value: "someone" } });
-    const password = screen.getByLabelText("Password:");
-    fireEvent.change(password, { target: { value: "abcd" } });
-
-    //submit
-    const submitButton = screen.getByRole("button");
-    fireEvent.click(submitButton);
-
-    // wait for mock fetch to resolve
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/api/account/login"),
-      expect.objectContaining({
-        method: "POST",
-        headers: expect.objectContaining({
-          "Content-Type": "application/json",
-        }),
-      })
-    );
-
-    // wait for failure message
-    await waitFor(() =>
-      expect(window.alert).toHaveBeenCalledWith(
-        "Your login attempt failed. Please check your credentials and try again."
-      )
-    );
-  });
 });
 
 describe("Navbar Component", () => {

@@ -217,7 +217,7 @@ describe('Shop Component', () => {
     );
   });
 
-  test('correctly handles display when something gets purchased', async () => {
+  test('correctly updates display when something gets purchased', async () => {
     await act(async () => {
       render(<Shop username="test" />);
     });
