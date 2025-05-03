@@ -22,6 +22,7 @@ const borderPaths = {
 export default function AvatarDisplay({dimension, avatarName, borderName}) {
   return (
     <div
+      data-testId="avatar-display-div"
       style={{
         height: dimension,
         width: dimension,

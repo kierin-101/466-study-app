@@ -9,7 +9,7 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
 
   if (itemDetails.reward_type_id === 1) { // 1 = avatar
     return (
-      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+      <div data-testid={`${itemDetails.reward_name} Container`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
         <AvatarDisplay dimension="10vw" avatarName={itemDetails.reward_name} borderName={null}/>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
@@ -22,7 +22,7 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
     )
   } else if (itemDetails.reward_type_id === 2) { // 2 = title
     return (
-      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+      <div data-testid={`${itemDetails.reward_name} Container`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
         {!itemDetails.acquisition_date ? 
@@ -34,7 +34,7 @@ const ShopItem = ({itemDetails, displayedPoints, onEquip, onPurchase}) => {
     )
   } else if (itemDetails.reward_type_id === 3) { // 3 = theme
     return (
-      <div style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
+      <div data-testid={`${itemDetails.reward_name} Container`} style={{display: "flex", flexDirection:"column", justifyContent: "center", alignItems: "center", width: "20vw", height:"20vw", borderRadius: "8px", border: "8px solid lightgrey"}}>
         <h3>{itemDetails.reward_name}</h3>
         <AvatarDisplay dimension="7vw" avatarName={null} borderName={itemDetails.reward_name}/>
         <p style={{textAlign:"center"}}>{itemDetails.description}</p>
