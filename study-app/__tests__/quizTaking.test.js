@@ -61,15 +61,30 @@ window.location = { href: "", search: "?quiz=123" };
 describe("TakeQuiz Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    fetch.resetMocks();
   });
-  // mock fetch api to get quiz data
-  beforeEach(() => {
-    fetch.mockResponseOnce(
-      JSON.stringify(dummyQuizData),
-      { status: 200 }
-    );
+  test("submits quiz answers", async () => {
+    // First response is for quiz data
+    fetch.mockResponses(
+      [JSON.stringify(dummyQuizData), { status: 200 }],
+      [JSON.stringify({ message: "User answers saved successfully" }), { status: 200 }],
+      [JSON.stringify({ message: "Quiz submitted! You earned 5 points." }), { status: 200 }]
+    )
+
+    render(<TakeQuiz />);
+    const answer2 = await screen.findByLabelText(/Paris/i);
+    fireEvent.click(answer2);
+    const submitButton = await screen.findByText(/Submit Quiz/i);
+    fireEvent.click(submitButton);
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+    await waitFor(() => expect(window.alert).toHaveBeenCalledWith(
+      "Quiz submitted! You earned 5 points."
+    ));
   });
+
   test("renders quiz title and description", async () => {
+    fetch.mockResponseOnce(JSON.stringify(dummyQuizData), { status: 200 });
     render(<TakeQuiz />);
     // wait for mock fetch to resolve
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
@@ -81,6 +96,7 @@ describe("TakeQuiz Component", () => {
   });
 
   test("renders quiz questions and answers", async () => {
+    fetch.mockResponseOnce(JSON.stringify(dummyQuizData), { status: 200 });
     render(<TakeQuiz />);
     const question = await screen.findByText(/What is the capital of France?/i);
     const answer1 = await screen.findByText(/Tokyo/i);
@@ -94,16 +110,6 @@ describe("TakeQuiz Component", () => {
     expect(answer4).toBeInTheDocument();
   });
 
-  test("submits quiz answers", async () => {
-    render(<TakeQuiz />);
-    const answer2 = await screen.findByLabelText(/Paris/i);
-    fireEvent.click(answer2);
-    const submitButton = await screen.findByText(/Submit/i);
-    fireEvent.click(submitButton);
-    await waitFor(() => expect(window.alert).toHaveBeenCalledWith(
-      "Quiz submitted! You scored 5 points."
-    ));
-  });
 
 });
 
@@ -117,7 +123,6 @@ describe('Attempting to take quiz before release date', () => {
       release_timestamp: "2026-01-01T15:00:00.000Z",
       due_timestamp: "2026-04-07T17:00:00.000Z",
     };
-    console.log("Future:", futureQuiz);
     fetch.mockResponseOnce(
       JSON.stringify(futureQuiz),
       { status: 200 }

@@ -16,20 +16,20 @@ router.post('/create', async (req, res) => {
   const config = req.config;
 
   if (!title || !releaseDate || !dueDate || !assignedClass) {
-    return res.status(400).json({message: 'Missing quiz information' });
+    return res.status(400).json({ message: 'Missing quiz information' });
   }
 
   try {
     const pool = await getPool(config);
 
     const quizResult = await pool.request()
-    .input('title', sql.NVarChar, title)
-    .input('description', sql.NVarChar, description)
-    .input('release_timestamp', sql.DateTime, releaseDate)
-    .input('due_timestamp', sql.DateTime, dueDate)
-    .input('target_score', sql.Decimal, targetScore)
-    .input('class_id', sql.Int, assignedClass)
-    .query(`INSERT INTO Quizzes (title, description, release_timestamp, due_timestamp, target_score, class_id)
+      .input('title', sql.NVarChar, title)
+      .input('description', sql.NVarChar, description)
+      .input('release_timestamp', sql.DateTime, releaseDate)
+      .input('due_timestamp', sql.DateTime, dueDate)
+      .input('target_score', sql.Decimal, targetScore)
+      .input('class_id', sql.Int, assignedClass)
+      .query(`INSERT INTO Quizzes (title, description, release_timestamp, due_timestamp, target_score, class_id)
       OUTPUT INSERTED.*
       VALUES (@title, @description, @release_timestamp, @due_timestamp, @target_score, @class_id)
     `);
@@ -39,10 +39,10 @@ router.post('/create', async (req, res) => {
     const createdAnswers = [];
     for (const question of questions) {
       const questionResult = await pool.request()
-      .input('question_text', sql.NVarChar, question.question)
-      .input('multiple_select', sql.Bit, question.multiselect)
-      .input('quiz_id', sql.Int, createdQuiz.quiz_id)
-      .query(`INSERT INTO Questions (question_text, multiple_select, quiz_id)
+        .input('question_text', sql.NVarChar, question.question)
+        .input('multiple_select', sql.Bit, question.multiselect)
+        .input('quiz_id', sql.Int, createdQuiz.quiz_id)
+        .query(`INSERT INTO Questions (question_text, multiple_select, quiz_id)
         OUTPUT INSERTED.*
         VALUES (@question_text, @multiple_select, @quiz_id)
       `);
@@ -51,11 +51,11 @@ router.post('/create', async (req, res) => {
       createdAnswers.push([]);
       for (const answer of question.options) {
         const answerResult = await pool.request()
-        .input('answer_text', sql.NVarChar, answer.answer)
-        .input('is_correct', sql.Bit, answer.isCorrect)
-        .input('points_rewarded', sql.Int, answer.points)
-        .input('question_id', sql.Int, createdQuestions[createdQuestions.length - 1].question_id)
-        .query(`INSERT INTO Answers (answer_text, is_correct, points_rewarded, question_id)
+          .input('answer_text', sql.NVarChar, answer.answer)
+          .input('is_correct', sql.Bit, answer.isCorrect)
+          .input('points_rewarded', sql.Int, answer.points)
+          .input('question_id', sql.Int, createdQuestions[createdQuestions.length - 1].question_id)
+          .query(`INSERT INTO Answers (answer_text, is_correct, points_rewarded, question_id)
           OUTPUT INSERTED.*
           VALUES (@answer_text, @is_correct, @points_rewarded, @question_id)
         `);
@@ -63,7 +63,7 @@ router.post('/create', async (req, res) => {
       }
     }
 
-    res.status(201).json({message: 'Quiz created successfully', quiz: createdQuiz, questions: createdQuestions, answers: createdAnswers });
+    res.status(201).json({ message: 'Quiz created successfully', quiz: createdQuiz, questions: createdQuestions, answers: createdAnswers });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error creating quiz' });
@@ -78,13 +78,13 @@ router.get('/:quiz_id', async (req, res) => {
   if (isNaN(quizId)) {
     return res.status(400).json({ message: 'Invalid quiz ID' });
   }
-  
+
   try {
     const pool = await getPool(config);
 
     const quizResult = await pool.request()
-    .input('quiz_id', sql.Int, quizId)
-    .query('SELECT quiz_id, title, description, release_timestamp, due_timestamp, target_score, class_id FROM Quizzes WHERE quiz_id = @quiz_id');
+      .input('quiz_id', sql.Int, quizId)
+      .query('SELECT quiz_id, title, description, release_timestamp, due_timestamp, target_score, class_id FROM Quizzes WHERE quiz_id = @quiz_id');
 
     if (quizResult.recordset.length === 0) {
       return res.status(404).json({ message: 'Quiz not found' });
@@ -92,8 +92,8 @@ router.get('/:quiz_id', async (req, res) => {
     const quiz = quizResult.recordset[0];
 
     const questionsResult = await pool.request()
-    .input('quiz_id', sql.Int, quizId)
-    .query(`SELECT * FROM Questions WHERE quiz_id = @quiz_id`);
+      .input('quiz_id', sql.Int, quizId)
+      .query(`SELECT * FROM Questions WHERE quiz_id = @quiz_id`);
 
     if (questionsResult.recordset.length === 0) {
       return res.status(404).json({ message: `Quiz with ID ${quizId} has no questions` });
@@ -102,8 +102,8 @@ router.get('/:quiz_id', async (req, res) => {
 
     for (const question of quiz.questions) {
       const answersResult = await pool.request()
-      .input('question_id', sql.Int, question.question_id)
-      .query(`SELECT * FROM Answers WHERE question_id = @question_id`);
+        .input('question_id', sql.Int, question.question_id)
+        .query(`SELECT * FROM Answers WHERE question_id = @question_id`);
 
       if (answersResult.recordset.length === 0) {
         return res.status(404).json({ message: `Question with ID ${question.question_id} has no answers` });
@@ -120,7 +120,7 @@ router.get('/:quiz_id', async (req, res) => {
 
 // Route to store user answers to quiz
 
-router.post('/user-answers', async(req, res) => {
+router.post('/user-answers', async (req, res) => {
   const { quiz_id, answers } = req.body;
   const config = req.config;
   const user_id = req.session?.userId
@@ -169,8 +169,8 @@ router.post('/user-answers', async(req, res) => {
   } catch (err) {
     console.error('Error saving answers:', err);
     res.status(500).json({ error: 'Failed to save answers' });
-    }
-  });
+  }
+});
 
 // Route to award points
 router.post('/award-points', async (req, res) => {
@@ -178,7 +178,7 @@ router.post('/award-points', async (req, res) => {
   const user_id = req.session?.userId;
   const config = req.config;
 
-  if(points_delta === undefined || !description) {
+  if (points_delta === undefined || !description) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -186,8 +186,8 @@ router.post('/award-points', async (req, res) => {
     const pool = await sql.connect(config);
 
     const { recordset: quizClassResult } = await pool.request()
-    .input('quiz_id', sql.Int, quiz_id)
-    .query(`
+      .input('quiz_id', sql.Int, quiz_id)
+      .query(`
       SELECT c.daily_point_cap
       FROM Quizzes q
       JOIN Classes c ON q.class_id = c.class_id
@@ -201,9 +201,9 @@ router.post('/award-points', async (req, res) => {
     const dailyCap = quizClassResult[0].daily_point_cap;
 
     const { recordset: pointsTodayResult } = await pool.request()
-    .input('user_id', sql.Int, user_id)
-    .input('quiz_id', sql.Int, quiz_id)
-    .query(`
+      .input('user_id', sql.Int, user_id)
+      .input('quiz_id', sql.Int, quiz_id)
+      .query(`
       SELECT ISNULL(SUM(points_delta), 0) AS points_today
       FROM PointsHistory ph
       JOIN Quizzes q ON ph.quiz_id = q.quiz_id
@@ -246,10 +246,10 @@ router.post('/award-points', async (req, res) => {
         WHERE user_id = @user_id
       `);
     await transaction.commit();
-    if(pointsToAward < points_delta) {
-      res.status(200).json({ message: `Quiz submitted! Daily cap reached. Partial points were awarded. You earned ${pointsToAward} point(s).`})
+    if (pointsToAward < points_delta) {
+      res.status(200).json({ message: `Quiz submitted! Daily cap reached. Partial points were awarded. You earned ${pointsToAward} point(s).` })
     } else {
-      res.status(200).json({message: `Quiz submitted! You earned ${points_delta} points.` });
+      res.status(200).json({ message: `Quiz submitted! You earned ${points_delta} points.` });
     }
 
   } catch (err) {
@@ -257,7 +257,7 @@ router.post('/award-points', async (req, res) => {
     res.status(500).json({ error: 'Failed to award points' });
   }
 });
-  
+
 // Route to retrieve high scores for a quiz
 router.get('/retrieve-high-scores/:quiz_id', async (req, res) => {
   const config = req.config;
@@ -274,7 +274,7 @@ router.get('/retrieve-high-scores/:quiz_id', async (req, res) => {
       .input('quiz_id', sql.Int, quizId)
       .query(`
         WITH AttemptScores AS (
-        SELECT 
+        SELECT
           ua.user_id,
           ua.attempt,
           SUM(a.points_rewarded) AS total_points
@@ -285,13 +285,13 @@ router.get('/retrieve-high-scores/:quiz_id', async (req, res) => {
         GROUP BY ua.user_id, ua.attempt
         ),
         HighScores AS (
-          SELECT 
+          SELECT
             user_id,
             MAX(total_points) AS high_score
           FROM AttemptScores
           GROUP BY user_id
         )
-        SELECT 
+        SELECT
           u.user_id,
           u.username,
           hs.high_score

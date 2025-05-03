@@ -92,7 +92,6 @@ export default function TakeQuiz() {
     e.preventDefault();
     // Logic to submit the quiz
     const quizID = new URLSearchParams(window.location.search).get("quiz");
-    console.log(userAnswerIDs);
     //submits this set of user answers to the database
     fetch(`http://localhost:5000/api/quiz/user-answers`, {
       method: "POST",
@@ -107,13 +106,6 @@ export default function TakeQuiz() {
         }),
       }),
     })
-      .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error("Failed to submit answers.");
-        }
-      })
       .catch((error) => {
         console.error("Error:", error);
       });
@@ -154,7 +146,6 @@ export default function TakeQuiz() {
         );
       }
     }, 0);
-    console.log(totalPoints);
 
     fetch(`http://localhost:5000/api/quiz/award-points`, {
       method: "POST",
@@ -170,12 +161,20 @@ export default function TakeQuiz() {
     })
       .then((response) => {
         if (response.ok) {
+          console.log("Points awarded successfully.");
+          console.log(response);
+          for (const [key, value] of Object.entries(response.body.values())) {
+            console.log(key, value);
+          }
           return response.json();
         } else {
+          console.log("Points not awarded successfully.");
           throw new Error("Failed to grade this quiz.");
         }
       })
       .then((data) => {
+        console.log("AAAAAAAAAAHHHHHHHHHHHHHHH");
+        console.log(data);
         // highlight correct answers
         const correctAnswers = questionBank.map((question) => {
           return question.options
@@ -204,8 +203,7 @@ export default function TakeQuiz() {
         alert(data.message);
       })
       .catch((error) => {
-        console.error("Error:", error);
-        alert("There was an error grading the quiz. Please try again.");
+        alert("There was an error grading the quiz. Please try again.\n" + error);
       });
   }
 
