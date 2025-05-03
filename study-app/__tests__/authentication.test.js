@@ -20,11 +20,15 @@ delete window.location;
 window.location = { href: "" };
 
 describe("Signup Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    fetch.resetMocks();
+  });
+
   test("properly handles the server saying the username is taken", async () => {
     // setup failure response
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      json: () => Promise.resolve({ message: "Username already exists" }),
+    fetch.mockResponse(JSON.stringify({ message: "Username already exists" }), {
+      status: 400,
     });
 
     render(<Signup />);
@@ -63,11 +67,7 @@ describe("Signup Component", () => {
 
   test("submits valid new user to database", async () => {
     // setup success response
-    jest.clearAllMocks();
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ id: "123" }),
-    });
+    fetch.mockResponse(JSON.stringify({ id: "123" }), { status: 201 });
 
     render(<Signup />);
 
@@ -120,8 +120,6 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if username was not provided", async () => {
-    jest.clearAllMocks();
-
     render(<Signup />);
 
     //fill page
@@ -139,8 +137,6 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if password was not provided", async () => {
-    jest.clearAllMocks();
-
     render(<Signup />);
 
     //fill page
@@ -158,8 +154,6 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if student vs teacher was not provided", async () => {
-    jest.clearAllMocks();
-
     render(<Signup />);
 
     //fill page
@@ -177,8 +171,21 @@ describe("Signup Component", () => {
   });
 });
 
+jest.clearAllMocks();
+fetch.resetMocks();
+
 describe("Login Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    fetch.resetMocks();
+  });
+
   test("properly notifies user if login failed", async () => {
+    //setup failure response
+    fetch.mockResponse(JSON.stringify({ message: "Invalid credentials" }), {
+      status: 401,
+    });
+
     render(<Login />);
 
     //fill page
@@ -191,23 +198,18 @@ describe("Login Component", () => {
     const submitButton = screen.getByRole("button");
     fireEvent.click(submitButton);
 
-    //setup failure response
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 401,
-      json: () => Promise.resolve({ message: 'Not found' }),
-    });
-
     // wait for mock fetch to resolve
-    await waitFor(() => expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining("/api/account/login"),
-      expect.objectContaining({
-        method: "POST",
-        headers: expect.objectContaining({
-          "Content-Type": "application/json",
-        }),
-      })
-    ));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/account/login"),
+        expect.objectContaining({
+          method: "POST",
+          headers: expect.objectContaining({
+            "Content-Type": "application/json",
+          }),
+        })
+      )
+    );
 
     // wait for failure message
     await waitFor(() =>
@@ -218,7 +220,12 @@ describe("Login Component", () => {
   });
 
   test("handles login correctly if authentication succeeds", async () => {
-    jest.clearAllMocks();
+    //setup success response
+    fetch.mockResponse(
+      JSON.stringify({ userId: 1, username: "student", isTeacher: false }),
+      { status: 201 }
+    );
+
     render(<Login />);
 
     //fill page
@@ -230,13 +237,6 @@ describe("Login Component", () => {
     //submit
     const submitButton = screen.getByRole("button");
     fireEvent.click(submitButton);
-
-    //setup success response
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({ userId: 1, username: "student", isTeacher: false }),
-    });
 
     // wait for mock fetch to resolve
     await waitFor(() =>
@@ -255,7 +255,6 @@ describe("Login Component", () => {
   });
 
   test("will not attempt login for empty username", async () => {
-    jest.clearAllMocks();
     render(<Login />);
 
     //fill page
@@ -271,7 +270,6 @@ describe("Login Component", () => {
   });
 
   test("will not attempt login for empty password", async () => {
-    jest.clearAllMocks();
     render(<Login />);
 
     //fill page
@@ -285,7 +283,6 @@ describe("Login Component", () => {
     // expect form to block this attempt
     expect(fetch).not.toHaveBeenCalled();
   });
-
 });
 
 describe("Navbar Component", () => {
