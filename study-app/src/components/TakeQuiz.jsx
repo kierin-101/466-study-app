@@ -161,20 +161,12 @@ export default function TakeQuiz() {
     })
       .then((response) => {
         if (response.ok) {
-          console.log("Points awarded successfully.");
-          console.log(response);
-          for (const [key, value] of Object.entries(response.body.values())) {
-            console.log(key, value);
-          }
           return response.json();
         } else {
-          console.log("Points not awarded successfully.");
           throw new Error("Failed to grade this quiz.");
         }
       })
       .then((data) => {
-        console.log("AAAAAAAAAAHHHHHHHHHHHHHHH");
-        console.log(data);
         // highlight correct answers
         const correctAnswers = questionBank.map((question) => {
           return question.options
