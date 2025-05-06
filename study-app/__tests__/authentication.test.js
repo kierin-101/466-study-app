@@ -2,7 +2,7 @@ import React, { act } from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Login from "../src/components/Login";
-import Signup from "../src/components/Signup";
+import SignUp from "../src/components/SignUp";
 import NavBar from "../src/components/NavBar";
 import { enableFetchMocks } from "jest-fetch-mock";
 import { jest, expect, describe, beforeEach, test } from "@jest/globals";
@@ -19,7 +19,7 @@ window.alert = jest.fn();
 delete window.location;
 window.location = { href: "" };
 
-describe("Signup Component", () => {
+describe("SignUp Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     fetch.resetMocks();
@@ -31,7 +31,7 @@ describe("Signup Component", () => {
       status: 400,
     });
 
-    render(<Signup />);
+    render(<SignUp />);
 
     //fill page
     const username = screen.getByLabelText("Username:");
@@ -69,7 +69,7 @@ describe("Signup Component", () => {
     // setup success response
     fetch.mockResponse(JSON.stringify({ id: "123" }), { status: 201 });
 
-    render(<Signup />);
+    render(<SignUp />);
 
     //fill page
     const username = screen.getByLabelText("Username:");
@@ -120,7 +120,7 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if username was not provided", async () => {
-    render(<Signup />);
+    render(<SignUp />);
 
     //fill page
     const password = screen.getByLabelText("Password:");
@@ -137,7 +137,7 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if password was not provided", async () => {
-    render(<Signup />);
+    render(<SignUp />);
 
     //fill page
     const username = screen.getByLabelText("Username:");
@@ -154,7 +154,7 @@ describe("Signup Component", () => {
   });
 
   test("will not try to register a user if student vs teacher was not provided", async () => {
-    render(<Signup />);
+    render(<SignUp />);
 
     //fill page
     const username = screen.getByLabelText("Username:");
