@@ -75,6 +75,9 @@ export default function TakeQuiz() {
         updatedAnswers[questionIndex] = updatedAnswers[questionIndex].filter(
           (answer) => answer !== selectedAnswer
         );
+        updatedAnswerIDs[questionIndex] = updatedAnswerIDs[questionIndex].filter(
+          (answer) => answer !== selectedAnswerID
+        )
       } else {
         updatedAnswers[questionIndex].push(selectedAnswer);
         updatedAnswerIDs[questionIndex].push(selectedAnswerID);
@@ -163,7 +166,7 @@ export default function TakeQuiz() {
         if (response.ok) {
           return response.json();
         } else {
-          throw new Error("Failed to grade this quiz.");
+          return response.json().then((data) => {throw new Error(data.error)});
         }
       })
       .then((data) => {
@@ -195,7 +198,7 @@ export default function TakeQuiz() {
         alert(data.message);
       })
       .catch((error) => {
-        alert("There was an error grading the quiz. Please try again.\n" + error);
+        alert("There was an error grading the quiz:\n" + error);
       });
   }
 
