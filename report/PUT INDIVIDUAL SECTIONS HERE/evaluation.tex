@@ -45,3 +45,17 @@ Educational Feedback & The server aggregates and processes user performance data
 \end{tabularx}
 \caption{Project Goals and Architectural Alignment}
 \end{table}
+
+\subsection{Unit Testing}
+Unite Testing was used to ensure the reliability of the system. In particular, we used \textbf{Jest}, which is a popular JavaScript testing framework. The test are found in the aptly named \texttt{\_\_test\_\_} folder inside the \texttt{study-app} section of the repository. The test cover the major components of the GUI, including:
+\begin{itemize}
+    \item \textbf{Authentication}: Tests ensure that the authentication process works as expected, including login functionality, sign up processes, and error handling.
+    \item \textbf{Classes}: Tests ensure that classes are displayed properly, with the GUI reflecting the correct data from the backend and differentiating between students and teachers.
+    \item \textbf{Class Creation}: Tests ensure that the class creation process works as expected, with classes having a name, subject, and daily point cap.
+    \item \textbf{Class Overview}: Tests ensure that the proper classes are shown to the user and that teachers have the ability to create new classes.
+    \item \textbf{Quiz Creation}: Tests ensure that the quiz creation process properly validates quiz titles, release/due dates, questions, and answers.
+    \item \textbf{Quiz Taking}: Tests ensure that the quiz taking process works as expected, including question display, answer selection, and score calculation.
+    \item \textbf{Shop}: Tests ensure that the shop displays the correct items and that the purchase process works as expected.
+\end{itemize}
+
+The tests are run using the command \texttt{npm test} while the user is in the \texttt{study-app} directory. The tests are designed to be run in a continuous integration environment, ensuring that any changes to the codebase do not break existing functionality. The tests are also designed to be easy to read and understand, making it easy for other developers to contribute to the project.
