@@ -3,23 +3,13 @@ The system is built on a client–server architecture, separating concerns betwe
 
 \subsection{Evaluation of Key Architectural Aspects}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\linewidth}{|l|X|}
-\hline
-\textbf{Aspect} & \textbf{Evaluation} \\
-\hline
-Logical Separation & The frontend and backend are completely decoupled; the frontend has no direct access to backend logic or databases. \\
-\hline
-Communication (API) & All interactions occur via RESTful APIs, preserving a stateless design and enabling consistent decoupling. \\
-\hline
-Security & Authentication and authorization are handled server-side. The frontend never handles sensitive logic or has direct access to user data. \\
-\hline
-Responsibility Split & The client manages rendering and local UI state; the server handles data validation, persistence, and all core processing. \\
-\hline
-\end{tabularx}
-\caption{Architectural Aspect Evaluation}
-\end{table}
+\textbf{Logical Separation:} The frontend and backend are completely decoupled; the frontend has no direct access to backend logic or databases.
+
+\textbf{Communication (API):} All interactions occur via RESTful APIs, preserving a stateless design and enabling consistent decoupling.
+
+\textbf{Security:} Authentication and authorization are handled server-side. The frontend never handles sensitive logic or has direct access to user data.
+
+\textbf{Responsibility Split:} The client manages rendering and local UI state; the server handles data validation, persistence, and all core processing.
 
 \subsection{Strengths}
 \begin{itemize}
