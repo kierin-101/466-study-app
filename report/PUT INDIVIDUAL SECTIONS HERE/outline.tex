@@ -1,47 +1,48 @@
-\subsection{Architectural Overview}
-The system is built on a client–server architecture, separating concerns between a \textbf{React frontend} and an \textbf{Express backend}. This modular design ensures that each component can operate, scale, and be maintained independently. The backend manages business logic and database interactions, while the frontend is responsible for presenting information and capturing user interaction. Communication between the two layers occurs exclusively via RESTful API calls, maintaining a strict separation of concerns and minimizing coupling.
+The development of the software was split across four major phases:
 
-\subsection{Evaluation of Key Architectural Aspects}
+\subsection{Requirements (3/24/25 - 3/31/35)}
 
-\textbf{Logical Separation:} The frontend and backend are completely decoupled; the frontend has no direct access to backend logic or databases.
+During this phase, we built our initial prescriptive architecture through use of the twin peaks model. Initial requirements were collected, then used to inform our initial decision of a client-server style, then revisited under this architecture to iteratively build a cohesive, architecture-centered plan.
 
-\textbf{Communication (API):} All interactions occur via RESTful APIs, preserving a stateless design and enabling consistent decoupling.
-
-\textbf{Security:} Authentication and authorization are handled server-side. The frontend never handles sensitive logic or has direct access to user data.
-
-\textbf{Responsibility Split:} The client manages rendering and local UI state; the server handles data validation, persistence, and all core processing.
-
-\subsection{Strengths}
+This section's major responsibilities included:
 \begin{itemize}
-    \item \textbf{Scalability}: The backend can be scaled independently (e.g., through load balancing), while the frontend is lightweight and can be served statically.
-    \item \textbf{Maintainability}: Clear separation of concerns allows UI changes without backend modifications and vice versa, improving long-term maintainability.
-    \item \textbf{Flexibility}: The system architecture supports multiple types of clients using the same backend API.
-    \item \textbf{Security}: By centralizing sensitive operations on the server, the system reduces exposure to potential vulnerabilities.
+    \item \textbf{Functional Requirement Identification}
+    \item \textbf{Nonfunctional Requirement Identification}
+    \item \textbf{Architectural Style Identification}: Evolving alongside the lists of requirements, built an initial prescriptive architecture based on the client-server style.
 \end{itemize}
 
-\subsection{Limitations}
+Deliverables for this section included a list of requirements of each type, as well as the choice of architectural style to be elaborated on in the next stage. For resources, lecture slides detailing the major architectural styles were used to find a favorable match for our requirements.
+
+\subsection{Design (3/31/25 - 4/7/5)}
+
+With a strong sense of our app's requirements and a favorable architecture to build them under, this phase centered on further refinement of these concepts by choosing a particular tech stack for the implementation, as well as making proper diagrams to capture the architectural decisions. The architectural decisions made in the previous phase remained at the forefront of this stage and were further refined through the creation of these explicit diagrams.
+
+This section's major responsibilities included:
 \begin{itemize}
-    \item \textbf{Database Integration}: Local databases are currently in use, limiting centralization and real-time synchronization between users.
-    \item \textbf{Feature Scope}: Some intended features remain unimplemented due to time constraints; future iterations could further enhance system capability.
-    \item \textbf{User Interface}: Functionality was prioritized over visual design, resulting in a utilitarian UI that could benefit from aesthetic improvements.
+    \item \textbf{Tech Stack Identification}: It was decided a React front-end would provide a smooth experience to users for the purposes of data entry. With this, an Express.js backend to handle the API and business logic was a natural choice. MSSQL was chosen for the server based on the team's personal familiarity.
+    \item \textbf{Creation of Architecture Diagrams}: An ER diagram for the server, a UML diagram of the front-end React components, and a client-server diagram portraying the whole system were produced.
 \end{itemize}
 
-\subsection{Alignment with Project Goals}
+\subsection{Implementation (4/7/25 - 4/21/25)}
 
-\begin{table}[H]
-\centering
-\noindent\begin{tabularx}{\linewidth}{|l|X|}
-\hline
-\textbf{Goal} & \textbf{Implementation} \\
-\hline
-Sustainable Study Habits & The server enforces daily point caps to promote consistent, healthy engagement patterns. \\
-\hline
-Gamification and Rewards & The client displays avatars and themes based on reward data retrieved from the backend. \\
-\hline
-Scalability & The architecture supports increasing user loads without compromising client performance. \\
-\hline
-Educational Feedback & The server aggregates and processes user performance data; the client renders this feedback to users. \\
-\hline
-\end{tabularx}
-\caption{Project Goals and Architectural Alignment}
-\end{table}
+Here, the prescriptive architecture was put into place, with the hopes of the detail at previous phases mitigating any architectural drift that occurred. To that end, the team monitored for architectural degradation or any incompatibilities with system demands that were found as individual requirements were translated to code.
+
+This section's major responsibilities included:
+\begin{itemize}
+    \item \textbf{Implementing the GUI}: This included the React components, as well as setting them up to make their API calls.
+    \item \textbf{Implementing the backend}: This included the structure for the MSSQL server itself, as well as the Express.js routes to interact with it.
+\end{itemize}
+
+By the end of this phase, the app's source code was produced as a deliverable, along with a SQL script for easy server setup.
+
+\subsection{Analysis and Testing (4/21/25 - 5/5/25)}
+
+During this stage, the merits of our architecture-centered development were put to the test. The separation of concerns produced by following a layered architecture such as client-server were expected to greatly simplify the testing process when it came to unit tests. If we adhered to the architecture as expected, the architecture analysis conducted at this stage should reflect that.
+
+This section's major responsibilities included:
+\begin{itemize}
+    \item \textbf{Implementing Unit Tests}: Unit tests on the React components ensured that our client was processing responses from the server as expected, allowing us to verify the core separateness of the layers despite their interactions.
+    \item \textbf{Conducting Architecture Analysis}: Producing a writeup on the major aspects, advantages, and limitations of the architecture as it was realized.
+\end{itemize}
+
+Though these four phases used up the allotted time for initial project completion, future maintenance and evolution is expected to make full use of the architectural foundation laid by these previous phases.
