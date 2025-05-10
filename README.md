@@ -31,9 +31,6 @@ There is minimal input validation on the form fields at this time, as the local 
 
 One smaller limitation is that, after a daily points cap is reached, any answers the user gives for subsequent quizzes will be logged even though the client does not give any indication of the submission. This may result in a user seeing an unfamiliar high score on the quiz's listing.
 
-# Artifacts Included
-TODO
-
 # Compiling the Program
 1. You must have Node.js and npm installed to compile the app. Instructions can be found [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
 2. To install all the packages associated with the app, you must run `npm install` from three separate folders: the root folder `466-study-app`, the `server` folder, and the `study-app` folder.
